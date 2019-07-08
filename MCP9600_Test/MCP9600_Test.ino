@@ -1,8 +1,11 @@
 #include <Wire.h>
-// register pointers for various device functions
+
 #define DEV_ADDR 0x66
 #define RESOLUTION 0.0625
 
+#define retryAttempts 3
+
+// register pointers for various device functions
 enum MCP9600_Register {
   HOT_JUNC_TEMP = 0x00,
   DELTA_JUNCT_TEMP = 0x01,
@@ -14,34 +17,30 @@ enum MCP9600_Register {
 };
 
 uint8_t readSingleRegister(MCP9600_Register reg){
-  Wire.beginTransmission(DEV_ADDR);
-  Wire.write(reg);
-  Wire.endTransmission();
-  Wire.requestFrom(DEV_ADDR, 1);
-  
-  if(Wire.available()){
-    uint8_t data = Wire.read();
+  for(byte attempts; attempts <= retryAttempts; attempts++){
+    Wire.beginTransmission(DEV_ADDR);
+    Wire.write(reg);
     Wire.endTransmission();
-    return data;
+    if(Wire.requestFrom(DEV_ADDR, 1) != 0){
+      return Wire.read();     
+    }
   }
-
-  else{
-    return 0;
-  }
+  return;
 }
 
 uint16_t readDoubleRegister(MCP9600_Register reg){
-  Wire.beginTransmission(DEV_ADDR);
-  Wire.write(reg);
-  Wire.endTransmission();
-  Wire.requestFrom(DEV_ADDR, 2);
-
-  while(!(Wire.available() < 2)){
-    uint16_t data = Wire.read() << 8;
-    data |= Wire.read();
+  for(byte attempts; attempts <= retryAttempts; attempts++){
+    Wire.beginTransmission(DEV_ADDR);
+    Wire.write(reg);
     Wire.endTransmission();
-    return data;
+
+    if(Wire.requestFrom(DEV_ADDR, 2) != 0){
+      uint16_t data = Wire.read() << 8;
+      data |= Wire.read();
+      return data;
+    }
   }
+  return;
 }
 
 uint16_t getDeviceID(){
@@ -49,39 +48,42 @@ uint16_t getDeviceID(){
 }
 
 int16_t getDelta(){
-  Wire.beginTransmission(DEV_ADDR);
-  Wire.write(DELTA_JUNCT_TEMP);
-  Wire.endTransmission();
-  Wire.requestFrom(DEV_ADDR, 2);
+  int16_t little = readDoubleRegister(DELTA_JUNCT_TEMP);
+  int16_t big = lowByte(little);
+  big |= highByte(little) << 8;
+  return big;
+}
 
-  while(!(Wire.available() < 2)){
-    int16_t data = Wire.read() << 8;
-    data |= Wire.read();
-    Wire.endTransmission();
-    return data;
+bool isConnected(){
+  Wire.beginTransmission(DEV_ADDR);
+  if(Wire.endTransmission() != 0){
+    return false;
+  }
+  else{
+    return true;
   }
 }
 
 void setup() {
   Wire.begin();
+  Wire.setClock(10000);
   Serial.begin(115200);
-  Wire.beginTransmission(DEV_ADDR);
 
   //make sure the device will ack
-  if(Wire.endTransmission() != 0){
-    Serial.println("Device Setup Failed");
-    while(1);
+  if(isConnected()){
+    Serial.println("Device Setup Okay");
   }
 
   else{
-    Serial.print("Device setup okay");
+    Serial.println("Device Setup Failed");
+    while(1); //hang forever
   }
 }
 
 void loop() {
-  uint16_t hot = readDoubleRegister(HOT_JUNC_TEMP);
-  uint16_t cold = readDoubleRegister(COLD_JUNC_TEMP);
-  uint16_t delta = getDelta();
+  int16_t hot = readDoubleRegister(HOT_JUNC_TEMP);
+  int16_t cold = readDoubleRegister(COLD_JUNC_TEMP);
+  int16_t delta = getDelta();
   Serial.print("Device ID: ");
   Serial.print(getDeviceID(), BIN);
   Serial.print("  Hot Junction: ");
@@ -98,5 +100,4 @@ void loop() {
   Serial.print((float)delta*RESOLUTION);
   Serial.print(" °C)");
   Serial.println();
-  delay(10);
 }
