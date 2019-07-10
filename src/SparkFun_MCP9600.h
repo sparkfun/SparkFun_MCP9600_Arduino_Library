@@ -41,35 +41,63 @@ enum MCP9600_Register {
 };
 
 enum thermocoupleType {
-  Ktype = 0b000,
-  Jtype = 0b001,
-  Ttype = 0b010,
-  Ntype = 0b011,
-  Stype = 0b100,
-  Etype = 0b101,
-  Btype = 0b110,
-  Rtype = 0b111,
+  K_type = 0b000,
+  J_type = 0b001,
+  T_type = 0b010,
+  N_type = 0b011,
+  S_type = 0b100,
+  E_type = 0b101,
+  B_type = 0b110,
+  R_type = 0b111,
+};
+
+enum ambientResolution {
+  RES_ZERO_POINT_0625 = 0b0,
+  RES_ZERO_POINT_25 = 0b1,
+};
+
+enum thermocoupleResolution {
+  RES_18_BIT = 0b00,
+  RES_16_BIT = 0b01,
+  RES_14_BIT = 0b10,
+  RES_12_BIT = 0b11,
 };
 
 class MCP9600{
-    public:
-    MCP9600(uint8_t address = DEV_ADDR, TwoWire &wirePort = Wire);    //Class constructor
-    bool isConnected();                                               //Returns true if the thermocouple will acknowledge over I2C, and false otherwise
-    uint16_t deviceID();                                              //Returns the contents of the device ID register. The upper 8 bits are constant, but the lower contain revision data.
-    bool checkDeviceID();                                             //Returns true if the constant upper 8 bits in the device ID register are what they should be according to the datasheet.
+  public:
 
-    float thermocoupleTemp();                                         //Returns the thermocouple temperature in degrees Celcius
-    float ambientTemp();                                              //Returns the ambient (IC die) temperature in degrees Celcius
-    float tempDelta();                                                //Returns the difference in temperature between the thermocouple and ambient junctions, in degrees Celcius
+  //Class constructor
+  MCP9600(uint8_t address = DEV_ADDR, TwoWire &wirePort = Wire);
 
-    uint8_t setThermocoupleType(thermocoupleType type);               //Sets the type of thermocouple connected to the MCP9600. Supported types are KJTNSEBR.
-    uint8_t setFilterCoeffecients(uint8_t coeffecient);               //Sets how heavy of an exponential moving average filter to use. Set this to 0 for no filter, 1 for minimum filter, and 7 for maximum filter.
+  //Device status
+  bool isConnected();                                               //Returns true if the thermocouple will acknowledge over I2C, and false otherwise
+  uint16_t deviceID();                                              //Returns the contents of the device ID register. The upper 8 bits are constant, but the lower contain revision data.
+  bool checkDeviceID();                                             //Returns true if the constant upper 8 bits in the device ID register are what they should be according to the datasheet.
+  bool resetToDefaults();                                           //Resets all device parameters to their default values. Returns 1 if there was an error, zero otherwise.
 
-    private:
-    TwoWire *_i2cPort;                                                //Generic connection to user's chosen I2C port
-    uint8_t _deviceAddress;                                           //I2C address of the MCP9600
-    uint8_t readSingleRegister(MCP9600_Register reg);                 //Attempts to read a single register, will keep trying for retryAttempts amount of times
-    uint16_t readDoubleRegister(MCP9600_Register reg);                //Attempts to read two registers, will keep trying for retryAttempts amount of times
-    uint8_t writeSingleRegister(MCP9600_Register reg, uint8_t data);  //Attempts to write data into a single 8-bit register. Does not check to make sure it was written successfully.
+  //Sensor measurements
+  float thermocoupleTemp();                                         //Returns the thermocouple temperature in degrees Celcius
+  float ambientTemp();                                              //Returns the ambient (IC die) temperature in degrees Celcius
+  float tempDelta();                                                //Returns the difference in temperature between the thermocouple and ambient junctions, in degrees Celcius
+
+  //Measurement configuration
+  bool setAmbientResolution(ambientResolution res);                 //Changes the resolution on the cold (ambient) junction, for either 0.0625 or 0.25 degree C resolution. Lower resolution reduces conversion time.
+  ambientResolution getAmbientResolution();                         //Returns the resolution on the cold (ambient) junction, for either 0.0625 or 0.25 degree C resolution. Lower resolution reduces conversion time.
+  bool setThermocoupleResolution(thermocoupleResolution res);       //Changes the resolution on the hot (thermocouple) junction, for either 18, 16, 14, or 12-bit resolution. Lower resolution reduces conversion time.
+  thermocoupleResolution getThermocoupleResolution();               //Returns the resolution on the hot (thermocouple) junction, for either 18, 16, 14, or 12-bit resolution. Lower resolution reduces conversion time.
+
+  uint8_t setThermocoupleType(thermocoupleType type);               //Changes the type of thermocouple connected to the MCP9600. Supported types are KJTNSEBR.
+  thermocoupleType getThermocoupleType();                           //Returns the type of thermocouple connected to the MCP9600 as found in its configuration register. Supported types are KJTNSEBR.
+  uint8_t setFilterCoeffecients(uint8_t coeffecient);               //Changes the weight of the on-chip exponential moving average filter. Set this to 0 for no filter, 1 for minimum filter, and 7 for maximum filter.
+  uint8_t getFilterCoeffecients();                                  //Returns the weight of the on-chip exponential moving average filter.
+
+
+  //Internal I2C Abstraction
+  private:
+  TwoWire *_i2cPort;                                                //Generic connection to user's chosen I2C port
+  uint8_t _deviceAddress;                                           //I2C address of the MCP9600
+  uint8_t readSingleRegister(MCP9600_Register reg);                 //Attempts to read a single register, will keep trying for retryAttempts amount of times
+  uint16_t readDoubleRegister(MCP9600_Register reg);                //Attempts to read two registers, will keep trying for retryAttempts amount of times
+  bool writeSingleRegister(MCP9600_Register reg, uint8_t data);     //Attempts to write data into a single 8-bit register. Does not check to make sure it was written successfully.
 };
 #endif

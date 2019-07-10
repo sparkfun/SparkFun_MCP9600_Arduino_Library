@@ -26,12 +26,16 @@ Distributed as-is; no warranty is given.
 #include "WProgram.h"
 #endif
 
+//Class constructor
 MCP9600::MCP9600(uint8_t address, TwoWire &wirePort){
   _deviceAddress = address; //grab the address that the sensor is on
   _i2cPort = &wirePort; //grab the port that the user wants to use
   _i2cPort->begin();
   _i2cPort->setClock(10000);
 }
+
+
+/*-------------------------------- Device Status ------------------------*/
 
 bool MCP9600::isConnected(){
   _i2cPort->beginTransmission(_deviceAddress);
@@ -45,6 +49,9 @@ uint16_t MCP9600::deviceID(){
 bool MCP9600::checkDeviceID(){
   return (highByte(deviceID()) == DEV_ID_UPPER);
 }
+
+
+/*----------------------------- Sensor Measurements ---------------------*/
 
 float MCP9600::thermocoupleTemp(){
   int16_t raw = readDoubleRegister(HOT_JUNC_TEMP);
@@ -61,16 +68,60 @@ float MCP9600::tempDelta(){
   return ((float)raw * DEV_RESOLUTION);
 }
 
+
+/*--------------------------- Measurement Configuration --------------- */
+
+bool MCP9600::setAmbientResolution(ambientResolution res){
+  uint8_t config = readSingleRegister(DEVICE_CONFIG); //get current device configuration so we don't wipe everything else
+  bitWrite(config, 7, res); //set the bit that controls the ambient (cold) junction resolution
+
+  bool failed = writeSingleRegister(DEVICE_CONFIG, config); //write new config register to MCP9600
+  failed &= (readSingleRegister(DEVICE_CONFIG) != config); //double check that it was set properly
+  return failed; //return 1 if the write failed or the register wasn't properly set, 0 otherwise
+}
+
+ambientResolution MCP9600::getAmbientResolution(){
+  uint8_t config = readSingleRegister(DEVICE_CONFIG); //grab current device configuration 
+  return bitRead(config, 7); //return 7th bit from config register
+}
+
+bool MCP9600::setThermocoupleResolution(thermocoupleResolution res){
+  uint8_t config = readSingleRegister(DEVICE_CONFIG); //grab current device configuration so we don't wipe everything else
+  bool highResolutionBit = bitRead(res, 1);
+  bool lowResolutionBit = bitRead(res, 0);
+  bitWrite(config, 6, highResolutionBit); //set 6th bit of config register to 1st bit of the resolution
+  bitWrite(config, 5, lowResolutionBit); //set 5th bit of config register to 0th bit of the resolution
+
+  bool failed = writeSingleRegister(DEVICE_CONFIG, config); //write new config register to MCP9600
+  failed &= (readSingleRegister(DEVICE_CONFIG) != config); //double check that it was written properly
+  return failed; //return 1 if the write failed or the register wasn't properly set, 0 otherwise
+}
+
+thermocoupleResolution MCP9600::getThermocoupleResolution(){
+  uint8_t config = readSingleRegister(DEVICE_CONFIG); //grab current device configuration 
+  thermocoupleResolution res; //define new thermocoupleResolution enum to return
+  bool highResolutionBit = bitRead(config, 6);
+  bool lowResolutionBit = bitRead(config, 5);
+  bitWrite(res, 1, highResolutionBit); //set 1st bit of the enum to the 6th bit of the config register
+  bitWrite(res, 0, lowResolutionBit); //set 0th bit of the enum to the 5th bit of the config register
+  return res;
+}
+
 uint8_t MCP9600::setThermocoupleType(thermocoupleType type){
-  uint8_t config = readSingleRegister(THERMO_SENSOR_CONFIG);
+  uint8_t config = readSingleRegister(THERMO_SENSOR_CONFIG); //grab current device configuration so we don't wipe everything else
   bitClear(config, 4); //clear the necessary bits so that they can be set
   bitClear(config, 5);
   bitClear(config, 6);
   config |= (type << 4);  //set the necessary bits in the config register
-  if(writeSingleRegister(THERMO_SENSOR_CONFIG, config) != 0) return 1; //if write fails, return 1
+  if(writeSingleRegister(THERMO_SENSOR_CONFIG, config)) return 1; //if write fails, return 1
   if(readSingleRegister(THERMO_SENSOR_CONFIG) != config) return 2; //if the register didn't take the new value, return 2
 
   return 0; //otherwise return 0
+}
+
+thermocoupleType MCP9600::getThermocoupleType(){
+  uint8_t config = readSingleRegister(THERMO_SENSOR_CONFIG);
+  return (config >> 4); //clear the non-thermocouple-type bits in the config registe
 }
 
 uint8_t MCP9600::setFilterCoeffecients(uint8_t coeffecient){
@@ -82,13 +133,16 @@ uint8_t MCP9600::setFilterCoeffecients(uint8_t coeffecient){
   config |= coeffecient; //set the necessary bits in the config register
 
   writeSingleRegister(THERMO_SENSOR_CONFIG, config);
-  for(uint8_t attempts = 0; attempts <= retryAttempts; attempts++){
-    uint8_t readBack = readSingleRegister(THERMO_SENSOR_CONFIG);
-    Serial.println(readBack, BIN);
-    if(readBack == config) return 0;
-  }
-  return 1;
+  return;
 }
+
+uint8_t MCP9600::getFilterCoeffecients(){
+  uint8_t config = readSingleRegister(THERMO_SENSOR_CONFIG);
+  return ((config << 5) >> 5); //clear the non-filter-coeffecients data in the config register
+}
+
+
+/*------------------------- Internal I2C Abstraction ---------------- */
 
 uint8_t MCP9600::readSingleRegister(MCP9600_Register reg){
   for(uint8_t attempts; attempts <= retryAttempts; attempts++){
@@ -117,9 +171,9 @@ uint16_t MCP9600::readDoubleRegister(MCP9600_Register reg){
   return;
 }
 
-uint8_t MCP9600::writeSingleRegister(MCP9600_Register reg, uint8_t data){
+bool MCP9600::writeSingleRegister(MCP9600_Register reg, uint8_t data){
   _i2cPort->beginTransmission(_deviceAddress);
   _i2cPort->write(reg);
   _i2cPort->write(data);
-  return _i2cPort->endTransmission();
+  return (_i2cPort->endTransmission() != 0);
 }

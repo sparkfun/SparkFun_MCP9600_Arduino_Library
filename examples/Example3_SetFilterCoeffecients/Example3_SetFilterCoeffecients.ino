@@ -19,6 +19,7 @@
 
 #include <SparkFun_MCP9600.h>
 MCP9600 tempSensor;
+uint8_t coeffecient = 5;
 
 void setup(){
     Serial.begin(115200);
@@ -38,17 +39,16 @@ void setup(){
     }
     else {
         Serial.println("Device ID is not correct! Freezing.");
-        while(1);
+        while(1); //hang forever
     }
 
     //print the filter coeffecient that's about to be set
-    uint8_t coeffecient = 4;
     Serial.print("Setting Filter Coeffecient to ");
     Serial.print(coeffecient);
     Serial.println("!");
 
     //tell us if the coeffecient was set sucessfully
-    if(tempSensor.setFilterCoeffecients(coeffecient) == 0){
+    if(tempSensor.getFilterCoeffecients() == coeffecient){
         Serial.println("Filter Coeffecients set sucessfully!");
     }
 

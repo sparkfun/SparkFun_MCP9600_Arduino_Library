@@ -8,19 +8,23 @@
   This example outputs the ambient and thermocouple temperatures from the MCP9600 sensor, but allows for a non
   K-type thermocouple to be used.
 
+  The Qwiic MCP9600 supports K/J/T/N/S/E/B/R type thermocouples, and the type can be configured below!
+
   Hardware Connections:
   Attach the Qwiic Shield to your Arduino/Photon/ESP32 or other
   Plug the sensor onto the shield
   Serial.print it out at 115200 baud to serial monitor.
 */
 
+
 #include <SparkFun_MCP9600.h>
 MCP9600 tempSensor;
+thermocoupleType type = S_type; //the type of thermocouple to change to!
 
 void setup(){
     Serial.begin(115200);
 
-    //check if the sensor is connected
+    //check that the sensor is connected
     if(tempSensor.isConnected()){
         Serial.println("Device will acknowledge!");
     }
@@ -29,7 +33,7 @@ void setup(){
         while(1); //hang forever
     }
 
-    //check if the Device ID is correct
+    //check that the Device ID is correct
     if(tempSensor.checkDeviceID()){
         Serial.println("Device ID is correct!");        
     }
@@ -38,9 +42,12 @@ void setup(){
         while(1);
     }
 
+    //change the thermocouple type being used
     Serial.println("Setting Thermocouple Type!");
-    
-    if(tempSensor.setThermocoupleType(Stype) == 0){
+    tempSensor.setThermocoupleType(type);
+
+    //make sure the type was set correctly!
+    if(tempSensor.getThermocoupleType() == type){
         Serial.println("Thermocouple Type set sucessfully!");
     }
 
