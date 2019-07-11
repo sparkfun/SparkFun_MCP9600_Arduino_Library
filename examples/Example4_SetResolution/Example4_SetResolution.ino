@@ -43,8 +43,8 @@
 #include <SparkFun_MCP9600.h>
 MCP9600 tempSensor;
 
-ambientResolution ambientRes = RES_ZERO_POINT_0625;
-thermocoupleResolution thermocoupleRes = RES_14_BIT;
+Ambient_Resolution ambientRes = RES_ZERO_POINT_0625;
+Thermocouple_Resolution thermocoupleRes = RES_14_BIT;
 
 void setup(){
   Serial.begin(115200);
@@ -69,12 +69,6 @@ void setup(){
   //set the resolution on the ambient (cold) junction
   tempSensor.setAmbientResolution(ambientRes);
   tempSensor.setThermocoupleResolution(thermocoupleRes);
-
-  //this is just debug, remove it if you're reading this
-  Serial.print("Ambient Resolution Config successful?: ");
-  Serial.println(tempSensor.getAmbientResolution() == ambientRes);
-  Serial.print("Thermocouple Resolution Config successful?: ");
-  Serial.println(tempSensor.getThermocoupleResolution() == thermocoupleRes);
 }
 
 void loop(){ //print the thermocouple, ambient and delta temperatures every 200ms
