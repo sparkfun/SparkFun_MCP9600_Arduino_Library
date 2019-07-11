@@ -8,8 +8,8 @@
   This example configures the shutdown (or "operating") mode that the MCP9600 runs in. Shutdown mode disables all
   power consuming activities on the MCP9600, including measurements, but it will still respond to I2C commands sent
   over Qwiic. Burst mode is similar, where the MCP9600 is shutdown until the Arduino asks it to wake up and take a 
-  number of samples, apply any filtering, update any outputs, and then go back to sleep. This example walks through
-  that process!
+  number of samples, apply any filtering, update any outputs, and then enter shutdown mode. This example walks
+  through that process!
 
   Hardware Connections:
   Attach the Qwiic Shield to your Arduino/Photon/ESP32 or other
@@ -20,10 +20,12 @@
 #include <SparkFun_MCP9600.h>
 MCP9600 tempSensor;
 Shutdown_Mode mode = BURST;
-Burst_Sample samples = SAMPLES_32;
+Burst_Sample samples = SAMPLES_8;
 
 void setup(){
   Serial.begin(115200);
+  Wire.begin(10000);
+  
   //check if the sensor is connected
   if(tempSensor.isConnected()){
     Serial.println("Device will acknowledge!");
@@ -43,8 +45,8 @@ void setup(){
   }
 
   //put the MCP9600 into burst mode!
+  tempSensor.setBurstSamples(samples); 
   tempSensor.setShutdownMode(BURST);
-  tempSensor.setBurstSamples(samples);  
 }
 
 void loop(){
@@ -63,5 +65,4 @@ void loop(){
     //clear the register and start a new burst cycle!
     tempSensor.startBurst();
   }
-  delay(200); //we want to be able to see our data, so we won't let it print any faster than 200ms
 }

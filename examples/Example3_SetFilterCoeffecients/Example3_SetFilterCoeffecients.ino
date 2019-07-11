@@ -19,10 +19,11 @@
 
 #include <SparkFun_MCP9600.h>
 MCP9600 tempSensor;
-uint8_t coeffecient = 5;
+uint8_t coeffecient = 3;
 
 void setup(){
     Serial.begin(115200);
+    Wire.begin(10000);
 
     //check if the sensor is connected
     if(tempSensor.isConnected()){
@@ -47,6 +48,8 @@ void setup(){
     Serial.print(coeffecient);
     Serial.println("!");
 
+    tempSensor.setFilterCoeffecients(coeffecient);
+
     //tell us if the coeffecient was set sucessfully
     if(tempSensor.getFilterCoeffecients() == coeffecient){
         Serial.println("Filter Coeffecients set sucessfully!");
@@ -54,6 +57,8 @@ void setup(){
 
     else{
         Serial.println("Setting filter coeffecient failed!");
+        Serial.println("The value of the coeffecient is: ");
+        Serial.println(tempSensor.getFilterCoeffecients(), BIN);
     }
 }
 
@@ -65,6 +70,8 @@ void loop(){ //print the thermocouple, ambient and delta temperatures every 200m
     Serial.print(" °C   Temperature Delta: ");
     Serial.print(tempSensor.tempDelta());
     Serial.print(" °C");
+    Serial.print("   Current Coeffecient: ");
+    Serial.print(tempSensor.getFilterCoeffecients(), BIN);
     Serial.println();
-    while(1); //delay(200);
+    delay(200);
 }

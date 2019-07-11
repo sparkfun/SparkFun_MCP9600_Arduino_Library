@@ -48,6 +48,7 @@ Thermocouple_Resolution thermocoupleRes = RES_14_BIT;
 
 void setup(){
   Serial.begin(115200);
+  Wire.begin(10000);
   //check if the sensor is connected
   if(tempSensor.isConnected()){
       Serial.println("Device will acknowledge!");

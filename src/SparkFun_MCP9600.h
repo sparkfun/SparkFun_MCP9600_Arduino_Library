@@ -76,9 +76,9 @@ enum Burst_Sample {
 };
 
 enum Shutdown_Mode {
-  NORMAL = 0b00,
-  SHUTDOWN = 0b01,
-  BURST = 0b10,
+  NORMAL = 0x00,
+  SHUTDOWN = 0x01,
+  BURST = 0x02,
 };
 
 class MCP9600{

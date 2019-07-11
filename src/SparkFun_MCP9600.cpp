@@ -91,7 +91,7 @@ bool MCP9600::setAmbientResolution(Ambient_Resolution res){
   bitWrite(config, 7, res); //set the bit that controls the ambient (cold) junction resolution
 
   bool failed = writeSingleRegister(DEVICE_CONFIG, config); //write new config register to MCP9600
-  failed &= (readSingleRegister(DEVICE_CONFIG) != config); //double check that it was set properly
+  failed |= (readSingleRegister(DEVICE_CONFIG) != config); //double check that it was set properly
   return failed; //return 1 if the write failed or the register wasn't properly set, 0 otherwise
 }
 
@@ -108,7 +108,7 @@ bool MCP9600::setThermocoupleResolution(Thermocouple_Resolution res){
   bitWrite(config, 5, lowResolutionBit); //set 5th bit of config register to 0th bit of the resolution
 
   bool failed = writeSingleRegister(DEVICE_CONFIG, config); //write new config register to MCP9600
-  failed &= (readSingleRegister(DEVICE_CONFIG) != config); //double check that it was written properly
+  failed |= (readSingleRegister(DEVICE_CONFIG) != config); //double check that it was written properly
   return failed; //return 1 if the write failed or the register wasn't properly set, 0 otherwise
 }
 
@@ -143,17 +143,27 @@ uint8_t MCP9600::setFilterCoeffecients(uint8_t coeffecient){
   if(coeffecient > 7) return 3; //return immediately if the value is too big
 
   uint8_t config = readSingleRegister(THERMO_SENSOR_CONFIG);
-  config = config >> 3;
-  config = config << 3;
-  config |= coeffecient; //set the necessary bits in the config register
+  bitWrite(coeffecient, 3, bitRead(config, 3));
+  bitWrite(coeffecient, 4, bitRead(config, 3));
+  bitWrite(coeffecient, 5, bitRead(config, 3));
+  bitWrite(coeffecient, 6, bitRead(config, 3));
+  bitWrite(coeffecient, 7, bitRead(config, 3));
 
-  writeSingleRegister(THERMO_SENSOR_CONFIG, config);
-  return;
+  //config = config >> 3;
+  //config = config << 3;
+  //config |= coeffecient; //set the necessary bits in the config register
+
+  return writeSingleRegister(THERMO_SENSOR_CONFIG, coeffecient);
 }
 
 uint8_t MCP9600::getFilterCoeffecients(){
   uint8_t config = readSingleRegister(THERMO_SENSOR_CONFIG);
-  return ((config << 5) >> 5); //clear the non-filter-coeffecients data in the config register
+  uint8_t coeff = 0;
+  bitWrite(coeff, 0, bitRead(config, 0));
+  bitWrite(coeff, 1, bitRead(config, 1));
+  bitWrite(coeff, 2, bitRead(config, 2));
+
+  return coeff; //clear the non-filter-coeffecients data in the config register
 }
 
 bool MCP9600::setBurstSamples(Burst_Sample samples){
@@ -166,7 +176,7 @@ bool MCP9600::setBurstSamples(Burst_Sample samples){
   bitWrite(config, 2, lowResolutionBit); //write 0th bit of samples to 2nd of config
 
   bool failed = writeSingleRegister(DEVICE_CONFIG, config); //write new config register to MCP9600
-  failed &= (readSingleRegister(DEVICE_CONFIG) != config); //double check that it was written properly
+  failed |= (readSingleRegister(DEVICE_CONFIG) != config); //double check that it was written properly
   return failed; //return 1 if the write failed or the register wasn't properly set, 0 otherwise
 }
 
@@ -190,7 +200,11 @@ bool MCP9600::burstAvailable(){
 bool MCP9600::startBurst(){
   uint8_t status = readSingleRegister(SENSOR_STATUS);
   bitWrite(status, 7, 0); //clear the 7th bit of the status register, and send over I2C
-  return writeSingleRegister(SENSOR_STATUS, status); //return whether the write was successful
+
+  bool failed =  writeSingleRegister(SENSOR_STATUS, status); //return whether the write was successful
+  failed |= setShutdownMode(BURST);
+
+  return failed;
 }
 
 bool MCP9600::setShutdownMode(Shutdown_Mode mode){
@@ -199,13 +213,16 @@ bool MCP9600::setShutdownMode(Shutdown_Mode mode){
   config |= mode;
 
   bool failed = writeSingleRegister(DEVICE_CONFIG, config); //write new config register to MCP9600
-  failed &= (readSingleRegister(DEVICE_CONFIG) != config); //double check that it was written properly
+  failed |= (readSingleRegister(DEVICE_CONFIG) != config); //double check that it was written properly
   return failed; //return 1 if the write failed or the register wasn't properly set, 0 otherwise
 }
 
 Shutdown_Mode MCP9600::getShutdownMode(){
   uint8_t config = readSingleRegister(DEVICE_CONFIG);
-  return ((config << 6) >> 6); //clear all bits except the last two and return
+  uint8_t mode = 0;
+  bitWrite(mode, 0, bitRead(config, 0));
+  bitWrite(mode, 1, bitRead(config, 1));
+  return mode; //clear all bits except the last two and return
 }
 
 /*------------------------- Internal I2C Abstraction ---------------- */

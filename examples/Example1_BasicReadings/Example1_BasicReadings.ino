@@ -18,6 +18,7 @@ MCP9600 tempSensor;
 
 void setup(){
     Serial.begin(115200);
+    Wire.begin(10000);
 
     //check if the sensor is connected
     if(tempSensor.isConnected()){
