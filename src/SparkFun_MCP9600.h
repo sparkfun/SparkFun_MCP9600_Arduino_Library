@@ -131,10 +131,14 @@ class MCP9600{
   Shutdown_Mode getShutdownMode();                                  //Returns the shutdown "operating" mode of the MCP9600. Configurable to Normal, Shutdown, and Burst.
 
 
-  //Temperature Alerts
-  bool configAlert(uint8_t number, float tempLimit,                 //Configures the alert with the number of the alert to use, whether to use the hot or cold junction, how much hysteresis to use (in degrees C), 
-     bool junction, uint8_t hysteresis, bool edge,                  //which edge to trigger on (rising or falling), activity (active high or active low), mode (comparator or interrupt), and whether everything is enabled         
-     bool activity, bool mode, bool enable);  
+  //Temperature Alerts 
+  bool configAlertTemp(uint8_t number, float temp);                 //Configures the temperature at which to trigger the alert for a given alert number.
+  bool configAlertJunction(uint8_t number, bool junction);          //Configures the junction to monitor the temperature of to trigger the alert. Set to zero for the thermocouple (hot) junction, or one for the ambient (cold) junction.
+  bool configAlertHysteresis(uint8_t number, uint8_t hysteresis);   //Configures the hysteresis to use around the temperature set point, in degrees Celcius.
+  bool configAlertEdge(uint8_t number, bool edge);                  //Configures whether to trigger the alert on the rising (cold -> hot) or falling (hot -> cold) edge of the temperature change. Set to 1 for rising, 0 for falling.
+  bool configAlertLogicLevel(uint8_t number, bool level);           //Configures whether the hardware alert pin is active-high or active-low. Set to 1 for active-high, 0 for active-low.
+  bool configAlertMode(uint8_t number, bool mode);                  //Configures whether the MCP9600 treats the alert like a comparator or an interrrupt. Set to 1 for interrupt, 0 for comparator. More information is on pg. 34 of the datasheet.
+  bool configAlertEnable(uint8_t number, bool enable);              //Configures whether or not the interrupt is enabled or not. Set to 1 to enable, or 0 to disable.
   bool clearAlert(uint8_t number);                                  //Clears the interrupt bit on the specified alert channel               
   bool isAlertTriggered(uint8_t number);                            //Returns true if the interrupt has been triggered, false otherwise
 
