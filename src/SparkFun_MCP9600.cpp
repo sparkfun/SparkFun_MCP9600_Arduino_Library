@@ -83,6 +83,11 @@ signed long MCP9600::rawADC(){
   }
 }
 
+bool MCP9600::inputRangeExceeded(){
+  uint8_t status = readSingleRegister(SENSOR_STATUS);
+  return bitRead(status, 4);
+}
+
 
 /*--------------------------- Measurement Configuration --------------- */
 
@@ -224,6 +229,116 @@ Shutdown_Mode MCP9600::getShutdownMode(){
   bitWrite(mode, 1, bitRead(config, 1));
   return mode; //clear all bits except the last two and return
 }
+
+/*---------------------------- Temperature Alerts ------------------- */
+
+ bool configAlert(uint8_t number, float tempLimit, bool junction, uint8_t hysteresis, bool edge, bool activity, bool mode, bool enable){
+  /* Parameters: 
+  uint8_t number: What temperature alert to configure. Value can range from 1-4.
+  bool junction: Which junction to latch the alert to. Set to 0 for the thermocouple (hot) junction, or 1 for the ambient (cold) junction
+  uint8_t hysteresis: How many degrees Celcius of hysteresis to use in the alert. More information on how this behaves is on pg. 33 of the datasheet
+  bool edge: Configures whether to trigger on the junction going from cold -> hot (rising) or from hot -> cold (falling). Set to true for rising, false for falling.
+  bool activity: Configures whether the output pin is active-high or active-low. Set to true for active high, false for active low.
+  bool mode: Configures whether the output pin acts as an interrupt or a comparator. If configured as an interrupt, the interrupt must be cleared
+             in software before the hardware interrupt pin is deasserted. Set to true for interrupt mode, false for comparator mode.
+  bool enable: Configures whether or not the alert output pin is enabled. */
+
+  MCP9600_Register config_reg; //pick the set of registers we need to write to
+  MCP9600_Register hysteresis_reg;
+  MCP9600_Register limit_reg
+  switch (number){
+  case 1:
+    config_reg = ALERT1_CONFIG;
+    hysteresis_reg = ALERT1_HYSTERESIS;
+    limit_reg = ALERT1_LIMIT;
+    break;
+
+  case 2:
+    config_reg = ALERT2_CONFIG;
+    hysteresis_reg = ALERT2_HYSTERESIS;
+    limit_reg = ALERT2_LIMIT;
+    break;
+
+  case 3:
+    config_reg = ALERT3_CONFIG;
+    hysteresis_reg = ALERT3_HYSTERESIS;
+    limit_reg = ALERT3_LIMIT;
+    break;
+
+  case 4:
+    config_reg = ALERT4_CONFIG;
+    hysteresis_reg = ALERT4_HYSTERESIS;
+    limit_reg = ALERT4_LIMIT;
+    break;
+
+  default: //if the user didn't pick a valid register, just return with error
+    return 1;
+    break;
+  }
+
+  //convert the user's parameters to register values
+  //configuration register
+  uint8_t config = 0;
+  if(junction) bitWrite(config, 4, 1);
+  if(edge) bitWrite(config, 3, 1);
+  if(activity) bitWrite(config, 2, 1);
+  if(mode) bitWrite(config, 1, 1);
+  if(enable) bitWrite(config, 0, 1);
+
+  //temperature limit 
+  uint16_t unsignedLimit = static_cast<uint16_t>(abs(tempLimit) * 4);
+  unsignedLimit = unsignedLimit << 2;
+  int16_t signedLimit = static_cast<int16_t> unsignedLimit;
+  if(tempLimit < 0) signedLimit *= -1; //if the original temp limit was negative we shifted away the sign bit, so reapply it if necessary
+
+
+  //write computed values
+  bool failed = writeSingleRegister(config_reg, config);
+  failed |= writeSingleRegister(hysteresis_reg, hysteresis);
+  failed |= writeSingleRegister(limit_reg, highByte(limit)); //by writing the high and low bytes separately we shouldn't have to worry about any
+  failed |= writeSingleRegister(limit_reg + 0x01, lowByte(limit)); //signed or unsigned integer typecasts!
+  return failed;
+}
+
+bool MCP9600::clearAlert(uint8_t number){
+  MCP9600_Register alertConfigRegister; //pick the register we need to use
+  switch (number) {
+  case 1:
+    alertConfigRegister = ALERT1_CONFIG;
+    break;
+  
+  case 2:
+    alertConfigRegister = ALERT2_CONFIG;
+    break;
+
+  case 3:
+    alertConfigRegister = ALERT3_CONFIG;
+    break;
+
+  case 4: 
+    alertConfigRegister = ALERT4_CONFIG;
+    break;
+
+  default:
+    return void;
+    break;
+  }
+  //grab the data already in the register so we don't override any other settings!
+  uint8_t alertConfig = readSingleRegister(alertConfigRegister);
+  bitWrite(alertConfig, 7, 1);
+
+  //write the new register to the MCP9600, return if it was successful
+  return writeSingleRegister(alertConfigRegister, alertConfig);
+    
+}
+
+bool MCP9600::isAlertTriggered(uint8_t number){
+  if(number > 4) return void; //if a nonexistent alert number is given, return with nothing
+  uint8_t status = readSingleRegister(SENSOR_STATUS);
+
+  return bitRead(status, number - 0x01);
+}
+
 
 /*------------------------- Internal I2C Abstraction ---------------- */
 

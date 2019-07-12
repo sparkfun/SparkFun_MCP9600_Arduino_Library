@@ -38,6 +38,18 @@ enum MCP9600_Register {
   SENSOR_STATUS = 0x04,
   THERMO_SENSOR_CONFIG = 0x05,
   DEVICE_CONFIG = 0x06,
+  ALERT1_CONFIG = 0x08,
+  ALERT2_CONFIG = 0x09,
+  ALERT3_CONFIG = 0x0A,
+  ALERT4_CONFIG = 0x0B,
+  ALERT1_HYSTERESIS = 0x0C,
+  ALERT2_HYSTERESIS = 0x0D,
+  ALERT3_HYSTERESIS = 0x0E,
+  ALERT4_HYSTERESIS = 0x0F,
+  ALERT1_LIMIT = 0x10,
+  ALERT2_LIMIT = 0x11,
+  ALERT3_LIMIT = 0x12,
+  ALERT4_LIMIT = 0x13,
   DEVICE_ID = 0x20,
 };
 
@@ -98,12 +110,13 @@ class MCP9600{
   float ambientTemp();                                              //Returns the ambient (IC die) temperature in degrees Celcius
   float tempDelta();                                                //Returns the difference in temperature between the thermocouple and ambient junctions, in degrees Celcius
   signed long rawADC();                                             //Returns the raw contents of the raw ADC register
+  bool inputRangeExceeded();                                        //Returns true if the MCP9600's EMF range has been exceeded, and false otherwise.
 
   //Measurement configuration
   bool setAmbientResolution(Ambient_Resolution res);                //Changes the resolution on the cold (ambient) junction, for either 0.0625 or 0.25 degree C resolution. Lower resolution reduces conversion time.
   Ambient_Resolution getAmbientResolution();                        //Returns the resolution on the cold (ambient) junction, for either 0.0625 or 0.25 degree C resolution. Lower resolution reduces conversion time.
   bool setThermocoupleResolution(Thermocouple_Resolution res);      //Changes the resolution on the hot (thermocouple) junction, for either 18, 16, 14, or 12-bit resolution. Lower resolution reduces conversion time.
-  Thermocouple_Resolution getThermocoupleResolution();        //Returns the resolution on the hot (thermocouple) junction, for either 18, 16, 14, or 12-bit resolution. Lower resolution reduces conversion time.
+  Thermocouple_Resolution getThermocoupleResolution();              //Returns the resolution on the hot (thermocouple) junction, for either 18, 16, 14, or 12-bit resolution. Lower resolution reduces conversion time.
 
   uint8_t setThermocoupleType(Thermocouple_Type type);              //Changes the type of thermocouple connected to the MCP9600. Supported types are KJTNSEBR.
   Thermocouple_Type getThermocoupleType();                          //Returns the type of thermocouple connected to the MCP9600 as found in its configuration register. Supported types are KJTNSEBR.
@@ -116,6 +129,14 @@ class MCP9600{
   bool startBurst();                                                //Initiates a burst on the MCP9600.
   bool setShutdownMode(Shutdown_Mode mode);                         //Changes the shutdown "operating" mode of the MCP9600. Configurable to Normal, Shutdown, and Burst. Returns 0 if properly set, 1 otherwise.
   Shutdown_Mode getShutdownMode();                                  //Returns the shutdown "operating" mode of the MCP9600. Configurable to Normal, Shutdown, and Burst.
+
+
+  //Temperature Alerts
+  bool configAlert(uint8_t number, float tempLimit,                 //Configures the alert with the number of the alert to use, whether to use the hot or cold junction, how much hysteresis to use (in degrees C), 
+     bool junction, uint8_t hysteresis, bool edge,                  //which edge to trigger on (rising or falling), activity (active high or active low), mode (comparator or interrupt), and whether everything is enabled         
+     bool activity, bool mode, bool enable);  
+  bool clearAlert(uint8_t number);                                  //Clears the interrupt bit on the specified alert channel               
+  bool isAlertTriggered(uint8_t number);                            //Returns true if the interrupt has been triggered, false otherwise
 
   //Internal I2C Abstraction
   private:
