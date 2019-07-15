@@ -26,7 +26,7 @@ uint8_t risingAlert = 1; //What alert to use for detecting cold -> hot transitio
 uint8_t fallingAlert = 3; //What alert to use for detecting hot -> cold transitions.
                           //These numbers are arbitrary and can be anything from 1 to 4, but just can't be equal!
 
-float alertTemp = 25.5;  //What temperature to trigger the alert at (before hysteresis).
+float alertTemp = 29.5;  //What temperature to trigger the alert at (before hysteresis).
                         //This is about the surface temperature of my finger, but please change this if 
                         //you have colder/warmer hands or if the ambient temperature is different.
 uint8_t hysteresis = 2; //How much hysteresis to have, in degrees Celcius. Feel free to adjust this, but 2°C seems to be about right.
@@ -53,31 +53,41 @@ void setup(){
     while(1); //hang forever
   }
 
-  //configure the temperature alert for when the thermocouple is touched
-  tempSensor.configAlertEnable(risingAlert, 0); //disable the alert (if it was already enabled) while we configure it
+  tempSensor.configAlertHysteresis(risingAlert, hysteresis);
   tempSensor.configAlertTemp(risingAlert, alertTemp);
   tempSensor.configAlertJunction(risingAlert, 0);
-  tempSensor.configAlertHysteresis(risingAlert, hysteresis);
   tempSensor.configAlertEdge(risingAlert, HIGH);
   tempSensor.configAlertLogicLevel(risingAlert, HIGH);
   tempSensor.configAlertMode(risingAlert, 1);
-  tempSensor.configAlertEnable(risingAlert, 1); //enable the alert!
+  tempSensor.configAlertEnable(risingAlert, true);
 
-  //configure the temperature alert for when the thermocouple is released!
-  tempSensor.configAlertEnable(fallingAlert, 0); //disable the alert (if it was already enabled) while we configure it
+  tempSensor.configAlertHysteresis(fallingAlert, hysteresis);
   tempSensor.configAlertTemp(fallingAlert, alertTemp);
   tempSensor.configAlertJunction(fallingAlert, 0);
-  tempSensor.configAlertHysteresis(fallingAlert, hysteresis);
   tempSensor.configAlertEdge(fallingAlert, HIGH);
   tempSensor.configAlertLogicLevel(fallingAlert, HIGH);
   tempSensor.configAlertMode(fallingAlert, 1);
-  tempSensor.configAlertEnable(fallingAlert, 1); //enable the alert!
+  tempSensor.configAlertEnable(fallingAlert, true);
+
+  Serial.print("alert 1 hysteresis: ");
+  Serial.println(tempSensor.readSingleRegister(ALERT1_HYSTERESIS), BIN);
+  Serial.print("alert 1 limit: ");
+  Serial.println(tempSensor.readDoubleRegister(ALERT1_LIMIT), BIN);
+  Serial.print("alert 1 config: ");
+  Serial.println(tempSensor.readSingleRegister(ALERT1_CONFIG), BIN);
+
+  Serial.print("alert 3 hysteresis: ");
+  Serial.println(tempSensor.readSingleRegister(ALERT3_HYSTERESIS), BIN);
+  Serial.print("alert 3 limit: ");
+  Serial.println(tempSensor.readDoubleRegister(ALERT3_LIMIT), BIN);
+  Serial.print("alert 3 config: ");
+  Serial.println(tempSensor.readSingleRegister(ALERT3_CONFIG), BIN);
 }
 
 unsigned long clock = millis();
 uint16_t updateTime = 200;
 void loop(){
-  if(clock < (millis() + updateTime)){
+  if((clock + updateTime) < millis()){
     Serial.print("Thermocouple: ");
     Serial.print(tempSensor.thermocoupleTemp());
     Serial.print(" °C   Ambient: ");
@@ -85,16 +95,29 @@ void loop(){
     Serial.print(" °C   Temperature Delta: ");
     Serial.print(tempSensor.tempDelta());
     Serial.print(" °C");
+
+    if(tempSensor.isTempGreaterThanLimit(risingAlert)){
+      Serial.print(" Temperature exceeds limit 1!");
+    }
+
+    if(tempSensor.isTempGreaterThanLimit(fallingAlert)){
+      Serial.print(" Temperature exeeds limit 3!");
+    }
+
     Serial.println(); 
+    clock = millis();
   }
 
-  if(tempSensor.isAlertTriggered(risingAlert)){
-    Serial.println("Thermocouple has been touched!");
-    tempSensor.clearAlert(risingAlert);
-  }
+  if(Serial.available()){
+    byte foo = Serial.read();
+    if(foo == '1'){
+      Serial.print("clearing alert 1: ");
+      Serial.println(tempSensor.clearAlertPin(1));
+    }
 
-  if(tempSensor.isAlertTriggered(fallingAlert)){
-    Serial.println("Thermocouple has been released!");
-    tempSensor.clearAlert(fallingAlert);
+    if(foo == '3'){
+      Serial.print("clearing alert 3: ");
+      Serial.println(tempSensor.clearAlertPin(3));
+    }
   }
 }

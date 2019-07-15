@@ -260,9 +260,7 @@ bool MCP9600::configAlertTemp(uint8_t number, float temp){
   if(temp < 0) signedTempLimit *= -1; //if the original temp limit was negative we shifted away the sign bit, so reapply it if necessary
 
   //write the new temp limit to the MCP9600, return if it was successful
-  bool failed = writeSingleRegister(tempLimitRegister, highByte(signedTempLimit));
-  failed |= writeSingleRegister(tempLimitRegister + 0x01, lowByte(signedTempLimit));
-  return failed;
+  return writeDoubleRegister(tempLimitRegister, signedTempLimit);
 }
 
 bool MCP9600::configAlertJunction(uint8_t number, bool junction){
@@ -419,7 +417,7 @@ bool MCP9600::configAlertEnable(uint8_t number, bool enable){
   return writeSingleRegister(alertConfigRegister, config);
 }
 
-bool MCP9600::clearAlert(uint8_t number){
+bool MCP9600::clearAlertPin(uint8_t number){
   MCP9600_Register alertConfigRegister; //pick the register we need to use
   switch (number) {
   case 1:
@@ -448,14 +446,28 @@ bool MCP9600::clearAlert(uint8_t number){
 
   //write the new register to the MCP9600, return if it was successful
   return writeSingleRegister(alertConfigRegister, alertConfig);
-    
 }
 
-bool MCP9600::isAlertTriggered(uint8_t number){
+bool MCP9600::isTempGreaterThanLimit(uint8_t number){
   if(number > 4) return; //if a nonexistent alert number is given, return with nothing
   uint8_t status = readSingleRegister(SENSOR_STATUS);
-
-  return bitRead(status, number - 0x01);
+  switch (number){
+  case 1:
+    return bitRead(status, 0);
+    break;
+  case 2:
+    return bitRead(status, 1);
+    break;
+  case 3:
+    return bitRead(status, 2);
+    break;
+  case 4:
+    return bitRead(status, 3);
+    break;
+  default:
+    return;
+    break;
+  }
 }
 
 
@@ -492,5 +504,13 @@ bool MCP9600::writeSingleRegister(MCP9600_Register reg, uint8_t data){
   _i2cPort->beginTransmission(_deviceAddress);
   _i2cPort->write(reg);
   _i2cPort->write(data);
+  return (_i2cPort->endTransmission() != 0);
+}
+
+bool MCP9600::writeDoubleRegister(MCP9600_Register reg, uint16_t data){
+  _i2cPort->beginTransmission(_deviceAddress);
+  _i2cPort->write(reg);
+  _i2cPort->write(highByte(data));
+  _i2cPort->write(lowByte(data));
   return (_i2cPort->endTransmission() != 0);
 }

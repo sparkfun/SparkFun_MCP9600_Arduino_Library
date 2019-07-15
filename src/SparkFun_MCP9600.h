@@ -139,15 +139,20 @@ class MCP9600{
   bool configAlertLogicLevel(uint8_t number, bool level);           //Configures whether the hardware alert pin is active-high or active-low. Set to 1 for active-high, 0 for active-low.
   bool configAlertMode(uint8_t number, bool mode);                  //Configures whether the MCP9600 treats the alert like a comparator or an interrrupt. Set to 1 for interrupt, 0 for comparator. More information is on pg. 34 of the datasheet.
   bool configAlertEnable(uint8_t number, bool enable);              //Configures whether or not the interrupt is enabled or not. Set to 1 to enable, or 0 to disable.
-  bool clearAlert(uint8_t number);                                  //Clears the interrupt bit on the specified alert channel               
-  bool isAlertTriggered(uint8_t number);                            //Returns true if the interrupt has been triggered, false otherwise
+  bool clearAlertPin(uint8_t number);                               //Clears the interrupt on the specified alert channel, resetting the value of the pin.           
+  bool isTempGreaterThanLimit(uint8_t number);                      //Returns true if the interrupt has been triggered, false otherwise
 
+
+  //debug
+  uint8_t readSingleRegister(MCP9600_Register reg);                 //Attempts to read a single register, will keep trying for retryAttempts amount of times
+  uint16_t readDoubleRegister(MCP9600_Register reg);                //Attempts to read two registers, will keep trying for retryAttempts amount of times
+  bool writeSingleRegister(MCP9600_Register reg, uint8_t data);     //Attempts to write data into a single 8-bit register. Does not check to make sure it was written successfully. Returns 0 if there wasn't an error on I2C transmission, and 1 otherwise.
+  bool writeDoubleRegister(MCP9600_Register reg, uint16_t data);    //Attempts to write data into a double (two 8-bit) registers. Does not check to make sure it was written successfully. Returns 0 if there wasn't an error on I2C transmission, and 1 otherwise.
+ 
+ 
   //Internal I2C Abstraction
   private:
   TwoWire *_i2cPort;                                                //Generic connection to user's chosen I2C port
   uint8_t _deviceAddress;                                           //I2C address of the MCP9600
-  uint8_t readSingleRegister(MCP9600_Register reg);                 //Attempts to read a single register, will keep trying for retryAttempts amount of times
-  uint16_t readDoubleRegister(MCP9600_Register reg);                //Attempts to read two registers, will keep trying for retryAttempts amount of times
-  bool writeSingleRegister(MCP9600_Register reg, uint8_t data);     //Attempts to write data into a single 8-bit register. Does not check to make sure it was written successfully.
 };
 #endif

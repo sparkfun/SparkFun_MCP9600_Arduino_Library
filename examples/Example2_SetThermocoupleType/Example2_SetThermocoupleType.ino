@@ -19,7 +19,7 @@
 
 #include <SparkFun_MCP9600.h>
 MCP9600 tempSensor;
-thermocoupleType type = TYPE_S; //the type of thermocouple to change to!
+Thermocouple_Type type = TYPE_S; //the type of thermocouple to change to!
 
 void setup(){
     Serial.begin(115200);
