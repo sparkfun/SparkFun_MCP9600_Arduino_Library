@@ -30,8 +30,6 @@ Distributed as-is; no warranty is given.
 MCP9600::MCP9600(uint8_t address, TwoWire &wirePort){
   _deviceAddress = address; //grab the address that the sensor is on
   _i2cPort = &wirePort; //grab the port that the user wants to use
-  _i2cPort->begin();
-  _i2cPort->setClock(10000);
 }
 
 
@@ -53,19 +51,22 @@ bool MCP9600::checkDeviceID(){
 
 /*----------------------------- Sensor Measurements ---------------------*/
 
-float MCP9600::thermocoupleTemp(){
+float MCP9600::thermocoupleTemp(bool units){
   int16_t raw = readDoubleRegister(HOT_JUNC_TEMP);
-  return ((float)raw * DEV_RESOLUTION);
+  float celcius = ((float)raw * DEV_RESOLUTION);
+  units ? return celcius; : return (((float)celcius * 1.8f) + 32);
 }
 
-float MCP9600::ambientTemp(){
+float MCP9600::ambientTemp(bool units){
   int16_t raw = readDoubleRegister(COLD_JUNC_TEMP);
-  return ((float)raw * DEV_RESOLUTION);
+  float celcius = ((float)raw * DEV_RESOLUTION);
+  units ? return celcius; : return (((float)celcius * 1.8f) + 32);
 }
 
-float MCP9600::tempDelta(){
+float MCP9600::tempDelta(bool units){
   int16_t raw = readDoubleRegister(DELTA_JUNC_TEMP);
-  return ((float)raw * DEV_RESOLUTION);
+  float celcius = ((float)raw * DEV_RESOLUTION);
+  units ? return celcius; : return (((float)celcius * 1.8f) + 32);
 }
 
 signed long MCP9600::rawADC(){

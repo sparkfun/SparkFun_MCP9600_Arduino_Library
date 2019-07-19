@@ -106,9 +106,9 @@ class MCP9600{
   bool resetToDefaults();                                           //Resets all device parameters to their default values. Returns 1 if there was an error, zero otherwise.
 
   //Sensor measurements
-  float thermocoupleTemp();                                         //Returns the thermocouple temperature in degrees Celcius
-  float ambientTemp();                                              //Returns the ambient (IC die) temperature in degrees Celcius
-  float tempDelta();                                                //Returns the difference in temperature between the thermocouple and ambient junctions, in degrees Celcius
+  float thermocoupleTemp(bool units = true);                        //Returns the thermocouple temperature. Set units to true for Celcius, or false for freedom units (Fahrenheit)
+  float ambientTemp(bool units = true);                             //Returns the ambient (IC die) temperature. Set units to true for Celcius, or false for freedom units (Fahrenheit)
+  float tempDelta(bool units = true);                               //Returns the difference in temperature between the thermocouple and ambient junctions. Set units to true for Celcius, or false for freedom units (Fahrenheit)
   signed long rawADC();                                             //Returns the raw contents of the raw ADC register
   bool inputRangeExceeded();                                        //Returns true if the MCP9600's EMF range has been exceeded, and false otherwise.
 

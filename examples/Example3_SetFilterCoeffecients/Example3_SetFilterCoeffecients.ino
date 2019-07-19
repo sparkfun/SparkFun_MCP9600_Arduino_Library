@@ -38,6 +38,8 @@ void setup(){
     //check if the Device ID is correct
     if(tempSensor.checkDeviceID()){
         Serial.println("Device ID is correct!");
+        Serial.print("Device ID reported as: 0x");
+        Serial.println(tempSensor.readDoubleRegister(DEVICE_ID), HEX);
     }
     else {
         Serial.println("Device ID is not correct! Freezing.");
