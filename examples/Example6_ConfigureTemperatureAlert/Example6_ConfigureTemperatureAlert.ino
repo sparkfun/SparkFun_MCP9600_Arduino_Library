@@ -33,7 +33,8 @@ uint8_t hysteresis = 2; //How much hysteresis to have, in degrees Celcius. Feel 
 
 void setup(){
     Serial.begin(115200);
-    Wire.begin(10000);
+    Wire.begin();
+    Wire.setClock(100000);
 
   //check if the sensor is connected
   if(tempSensor.isConnected()){

@@ -23,7 +23,8 @@ uint8_t coeffecient = 3;
 
 void setup(){
     Serial.begin(115200);
-    Wire.begin(10000);
+    Wire.begin();
+    Wire.setClock(100000);
 
     //check if the sensor is connected
     if(tempSensor.isConnected()){
@@ -36,7 +37,7 @@ void setup(){
 
     //check if the Device ID is correct
     if(tempSensor.checkDeviceID()){
-        Serial.println("Device ID is correct!");        
+        Serial.println("Device ID is correct!");
     }
     else {
         Serial.println("Device ID is not correct! Freezing.");

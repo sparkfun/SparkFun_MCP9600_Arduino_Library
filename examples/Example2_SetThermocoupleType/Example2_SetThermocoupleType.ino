@@ -23,7 +23,8 @@ Thermocouple_Type type = TYPE_S; //the type of thermocouple to change to!
 
 void setup(){
     Serial.begin(115200);
-    Wire.begin(10000);
+    Wire.begin();
+    Wire.setClock(100000);
 
     //check that the sensor is connected
     if(tempSensor.isConnected()){
