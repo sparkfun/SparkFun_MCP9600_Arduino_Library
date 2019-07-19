@@ -16,7 +16,7 @@ script:
   - arduino --verify --board arduino:avr:uno $PWD/examples/Example3_SetFilterCoefficient/Example3_SetFilterCoefficient.ino
   - arduino --verify --board arduino:avr:uno $PWD/examples/Example4_SetResolution/Example4_SetResolution.ino
   - arduino --verify --board arduino:avr:uno $PWD/examples/Example5_BurstMode/Example5_BurstMode.ino
-  - arduino --verify --board arduino:avr:uno $PWD/examples/Example6_ConfigureTemperatureAlert/Example6_ConfigureTemperatureAlert.ino    
+  - arduino --verify --board arduino:avr:uno $PWD/examples/Example6_ConfigureTemperatureAlert/Example6_ConfigureTemperatureAlert.ino 
 notifications:
   email:
     on_success: change

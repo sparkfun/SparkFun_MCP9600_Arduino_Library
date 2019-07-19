@@ -51,25 +51,25 @@ bool MCP9600::checkDeviceID(){
 
 /*----------------------------- Sensor Measurements ---------------------*/
 
-float MCP9600::thermocoupleTemp(bool units){
+float MCP9600::getThermocoupleTemp(bool units){
   int16_t raw = readDoubleRegister(HOT_JUNC_TEMP);
   float celcius = ((float)raw * DEV_RESOLUTION);
   units ? return celcius; : return (((float)celcius * 1.8f) + 32);
 }
 
-float MCP9600::ambientTemp(bool units){
+float MCP9600::getAmbientTemp(bool units){
   int16_t raw = readDoubleRegister(COLD_JUNC_TEMP);
   float celcius = ((float)raw * DEV_RESOLUTION);
   units ? return celcius; : return (((float)celcius * 1.8f) + 32);
 }
 
-float MCP9600::tempDelta(bool units){
+float MCP9600::getTempDelta(bool units){
   int16_t raw = readDoubleRegister(DELTA_JUNC_TEMP);
   float celcius = ((float)raw * DEV_RESOLUTION);
   units ? return celcius; : return (((float)celcius * 1.8f) + 32);
 }
 
-signed long MCP9600::rawADC(){
+signed long MCP9600::getRawADC(){
   for(byte attempts; attempts <= retryAttempts; attempts++){
     _i2cPort->beginTransmission(DEV_ADDR);
     _i2cPort->write(RAW_ADC);
@@ -84,7 +84,7 @@ signed long MCP9600::rawADC(){
   }
 }
 
-bool MCP9600::inputRangeExceeded(){
+bool MCP9600::isInputRangeExceeded(){
   uint8_t status = readSingleRegister(SENSOR_STATUS);
   return bitRead(status, 4);
 }

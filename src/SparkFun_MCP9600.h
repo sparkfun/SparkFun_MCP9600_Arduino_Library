@@ -106,11 +106,11 @@ class MCP9600{
   bool resetToDefaults();                                           //Resets all device parameters to their default values. Returns 1 if there was an error, zero otherwise.
 
   //Sensor measurements
-  float thermocoupleTemp(bool units = true);                        //Returns the thermocouple temperature. Set units to true for Celcius, or false for freedom units (Fahrenheit)
-  float ambientTemp(bool units = true);                             //Returns the ambient (IC die) temperature. Set units to true for Celcius, or false for freedom units (Fahrenheit)
-  float tempDelta(bool units = true);                               //Returns the difference in temperature between the thermocouple and ambient junctions. Set units to true for Celcius, or false for freedom units (Fahrenheit)
-  signed long rawADC();                                             //Returns the raw contents of the raw ADC register
-  bool inputRangeExceeded();                                        //Returns true if the MCP9600's EMF range has been exceeded, and false otherwise.
+  float getThermocoupleTemp(bool units = true);                     //Returns the thermocouple temperature. Set units to true for Celcius, or false for freedom units (Fahrenheit)
+  float getAmbientTemp(bool units = true);                          //Returns the ambient (IC die) temperature. Set units to true for Celcius, or false for freedom units (Fahrenheit)
+  float getTempDelta(bool units = true);                            //Returns the difference in temperature between the thermocouple and ambient junctions. Set units to true for Celcius, or false for freedom units (Fahrenheit)
+  signed long getRawADC();                                             //Returns the raw contents of the raw ADC register
+  bool isInputRangeExceeded();                                        //Returns true if the MCP9600's EMF range has been exceeded, and false otherwise.
 
   //Measurement configuration
   bool setAmbientResolution(Ambient_Resolution res);                //Changes the resolution on the cold (ambient) junction, for either 0.0625 or 0.25 degree C resolution. Lower resolution reduces conversion time.
