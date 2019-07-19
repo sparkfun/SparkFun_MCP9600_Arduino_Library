@@ -1,5 +1,5 @@
 /*
-  Setting Filter Coeffecients with the MCP9600 Thermocouple Amplifier
+  Setting Filter Coefficient with the MCP9600 Thermocouple Amplifier
   By: Fischer Moseley
   SparkFun Electronics
   Date: July 8, 2019
@@ -7,7 +7,7 @@
 
   This example outputs the ambient and thermocouple temperatures from the MCP9600 sensor, but allows the filtering
   onboard the MCP9600 to be controlled. The MCP9600 implements an exponential running average filter, the
-  "strength" of which is programmable! The setFilterCoeffecients function takes a coeffecient between 0 and 7, 
+  "strength" of which is programmable! The setFilterCoefficient function takes a coefficient between 0 and 7, 
   where 0 disables the filter, 1 corresponds to minimum filtering, and 7 enables maximum filtering. The "strength"
   of the filter just refers to how long it takes for the filter to respond to a step function input. 
 
@@ -19,7 +19,7 @@
 
 #include <SparkFun_MCP9600.h>
 MCP9600 tempSensor;
-uint8_t coeffecient = 3;
+uint8_t coefficient = 3;
 
 void setup(){
     Serial.begin(115200);
@@ -46,22 +46,22 @@ void setup(){
         while(1); //hang forever
     }
 
-    //print the filter coeffecient that's about to be set
-    Serial.print("Setting Filter Coeffecient to ");
-    Serial.print(coeffecient);
+    //print the filter coefficient that's about to be set
+    Serial.print("Setting Filter coefficient to ");
+    Serial.print(coefficient);
     Serial.println("!");
 
-    tempSensor.setFilterCoeffecients(coeffecient);
+    tempSensor.setFilterCoefficient(coefficient);
 
-    //tell us if the coeffecient was set sucessfully
-    if(tempSensor.getFilterCoeffecients() == coeffecient){
-        Serial.println("Filter Coeffecients set sucessfully!");
+    //tell us if the coefficient was set sucessfully
+    if(tempSensor.getFilterCoefficient() == coefficient){
+        Serial.println("Filter Coefficient set sucessfully!");
     }
 
     else{
-        Serial.println("Setting filter coeffecient failed!");
-        Serial.println("The value of the coeffecient is: ");
-        Serial.println(tempSensor.getFilterCoeffecients(), BIN);
+        Serial.println("Setting filter coefficient failed!");
+        Serial.println("The value of the coefficient is: ");
+        Serial.println(tempSensor.getFilterCoefficient(), BIN);
     }
 }
 
@@ -73,8 +73,8 @@ void loop(){ //print the thermocouple, ambient and delta temperatures every 200m
     Serial.print(" °C   Temperature Delta: ");
     Serial.print(tempSensor.tempDelta());
     Serial.print(" °C");
-    Serial.print("   Current Coeffecient: ");
-    Serial.print(tempSensor.getFilterCoeffecients(), BIN);
+    Serial.print("   Current coefficient: ");
+    Serial.print(tempSensor.getFilterCoefficient(), BIN);
     Serial.println();
     delay(200);
 }

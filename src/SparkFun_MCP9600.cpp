@@ -145,31 +145,31 @@ Thermocouple_Type MCP9600::getThermocoupleType(){
   return (config >> 4); //clear the non-thermocouple-type bits in the config registe
 }
 
-uint8_t MCP9600::setFilterCoeffecients(uint8_t coeffecient){
-  if(coeffecient > 7) return 3; //return immediately if the value is too big
+uint8_t MCP9600::setFilterCoefficient(uint8_t coefficient){
+  if(coefficient > 7) return 3; //return immediately if the value is too big
 
   uint8_t config = readSingleRegister(THERMO_SENSOR_CONFIG);
-  bitWrite(coeffecient, 3, bitRead(config, 3));
-  bitWrite(coeffecient, 4, bitRead(config, 3));
-  bitWrite(coeffecient, 5, bitRead(config, 3));
-  bitWrite(coeffecient, 6, bitRead(config, 3));
-  bitWrite(coeffecient, 7, bitRead(config, 3));
+  bitWrite(coefficient, 3, bitRead(config, 3));
+  bitWrite(coefficient, 4, bitRead(config, 3));
+  bitWrite(coefficient, 5, bitRead(config, 3));
+  bitWrite(coefficient, 6, bitRead(config, 3));
+  bitWrite(coefficient, 7, bitRead(config, 3));
 
   //config = config >> 3;
   //config = config << 3;
-  //config |= coeffecient; //set the necessary bits in the config register
+  //config |= coefficient; //set the necessary bits in the config register
 
-  return writeSingleRegister(THERMO_SENSOR_CONFIG, coeffecient);
+  return writeSingleRegister(THERMO_SENSOR_CONFIG, coefficient);
 }
 
-uint8_t MCP9600::getFilterCoeffecients(){
+uint8_t MCP9600::getFilterCoefficient(){
   uint8_t config = readSingleRegister(THERMO_SENSOR_CONFIG);
   uint8_t coeff = 0;
   bitWrite(coeff, 0, bitRead(config, 0));
   bitWrite(coeff, 1, bitRead(config, 1));
   bitWrite(coeff, 2, bitRead(config, 2));
 
-  return coeff; //clear the non-filter-coeffecients data in the config register
+  return coeff; //clear the non-filter-Coefficient data in the config register
 }
 
 bool MCP9600::setBurstSamples(Burst_Sample samples){

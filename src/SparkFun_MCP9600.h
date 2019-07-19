@@ -120,8 +120,8 @@ class MCP9600{
 
   uint8_t setThermocoupleType(Thermocouple_Type type);              //Changes the type of thermocouple connected to the MCP9600. Supported types are KJTNSEBR.
   Thermocouple_Type getThermocoupleType();                          //Returns the type of thermocouple connected to the MCP9600 as found in its configuration register. Supported types are KJTNSEBR.
-  uint8_t setFilterCoeffecients(uint8_t coeffecient);               //Changes the weight of the on-chip exponential moving average filter. Set this to 0 for no filter, 1 for minimum filter, and 7 for maximum filter.
-  uint8_t getFilterCoeffecients();                                  //Returns the weight of the on-chip exponential moving average filter.
+  uint8_t setFilterCoefficient(uint8_t coefficient);               //Changes the weight of the on-chip exponential moving average filter. Set this to 0 for no filter, 1 for minimum filter, and 7 for maximum filter.
+  uint8_t getFilterCoefficient();                                  //Returns the weight of the on-chip exponential moving average filter.
 
   bool setBurstSamples(Burst_Sample samples);                       //Changes the amount of samples to take in burst mode. Returns 0 if set sucessfully, 1 otherwise.
   Burst_Sample getBurstSamples();                                   //Returns the amount of samples to take in burst mode, according to the device's configuration register.  
