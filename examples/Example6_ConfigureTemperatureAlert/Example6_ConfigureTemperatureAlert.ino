@@ -90,11 +90,11 @@ uint16_t updateTime = 200;
 void loop(){
   if((clock + updateTime) < millis()){
     Serial.print("Thermocouple: ");
-    Serial.print(tempSensor.thermocoupleTemp());
+    Serial.print(tempSensor.getThermocoupleTemp());
     Serial.print(" °C   Ambient: ");
-    Serial.print(tempSensor.ambientTemp());
+    Serial.print(tempSensor.getAmbientTemp());
     Serial.print(" °C   Temperature Delta: ");
-    Serial.print(tempSensor.tempDelta());
+    Serial.print(tempSensor.getTempDelta());
     Serial.print(" °C");
 
     if(tempSensor.isTempGreaterThanLimit(risingAlert)){

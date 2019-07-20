@@ -26,14 +26,22 @@ Distributed as-is; no warranty is given.
 #include "WProgram.h"
 #endif
 
-//Class constructor
-MCP9600::MCP9600(uint8_t address, TwoWire &wirePort){
+/*-------------------------------- Device Status ------------------------*/
+
+bool MCP9600::begin(uint8_t address, TwoWire &wirePort){
   _deviceAddress = address; //grab the address that the sensor is on
   _i2cPort = &wirePort; //grab the port that the user wants to use
+  
+  //return true if the device is connected and the device ID is what we expect
+  bool success = isConnected();
+  success &= checkDeviceID();
+  return success;
 }
 
-
-/*-------------------------------- Device Status ------------------------*/
+bool MCP9600::available(){
+  uint8_t status = readSingleRegister(SENSOR_STATUS);
+  return bitRead(status, 6);
+}
 
 bool MCP9600::isConnected(){
   _i2cPort->beginTransmission(_deviceAddress);
@@ -48,25 +56,51 @@ bool MCP9600::checkDeviceID(){
   return (highByte(deviceID()) == DEV_ID_UPPER);
 }
 
+bool MCP9600::resetToDefaults(){
+  bool success = writeSingleRegister(SENSOR_STATUS, 0x00);
+  success |= writeSingleRegister(THERMO_SENSOR_CONFIG, 0x00);
+  success |= writeSingleRegister(DEVICE_CONFIG, 0x00);
+  success |= writeSingleRegister(ALERT1_CONFIG, 0x00);
+  success |= writeSingleRegister(ALERT2_CONFIG, 0x00);
+  success |= writeSingleRegister(ALERT3_CONFIG, 0x00);
+  success |= writeSingleRegister(ALERT4_CONFIG, 0x00);
+  success |= writeSingleRegister(ALERT1_HYSTERESIS, 0x00);
+  success |= writeSingleRegister(ALERT2_HYSTERESIS, 0x00);
+  success |= writeSingleRegister(ALERT3_HYSTERESIS, 0x00);
+  success |= writeSingleRegister(ALERT4_HYSTERESIS, 0x00);
+  success |= writeDoubleRegister(ALERT1_LIMIT, 0x0000);
+  success |= writeDoubleRegister(ALERT2_LIMIT, 0x0000);
+  success |= writeDoubleRegister(ALERT3_LIMIT, 0x0000);
+  success |= writeDoubleRegister(ALERT4_LIMIT, 0x0000);
+  return success;
+}
 
 /*----------------------------- Sensor Measurements ---------------------*/
 
 float MCP9600::getThermocoupleTemp(bool units){
+  //read register and convert to celcius
   int16_t raw = readDoubleRegister(HOT_JUNC_TEMP);
   float celcius = ((float)raw * DEV_RESOLUTION);
-  units ? return celcius; : return (((float)celcius * 1.8f) + 32);
+
+  //clear data ready bit
+  uint8_t status = readSingleRegister(SENSOR_STATUS);
+  bitWrite(status, 6, 0);
+  writeSingleRegister(SENSOR_STATUS, status);
+
+  //return in celcius or freedom units
+  return units ? celcius : (((float)celcius * 1.8f) + 32);
 }
 
 float MCP9600::getAmbientTemp(bool units){
   int16_t raw = readDoubleRegister(COLD_JUNC_TEMP);
   float celcius = ((float)raw * DEV_RESOLUTION);
-  units ? return celcius; : return (((float)celcius * 1.8f) + 32);
+  return units ? celcius : (((float)celcius * 1.8f) + 32);
 }
 
 float MCP9600::getTempDelta(bool units){
   int16_t raw = readDoubleRegister(DELTA_JUNC_TEMP);
   float celcius = ((float)raw * DEV_RESOLUTION);
-  units ? return celcius; : return (((float)celcius * 1.8f) + 32);
+  return units ? celcius : (((float)celcius * 1.8f) + 32);
 }
 
 signed long MCP9600::getRawADC(){
@@ -103,7 +137,7 @@ bool MCP9600::setAmbientResolution(Ambient_Resolution res){
 
 Ambient_Resolution MCP9600::getAmbientResolution(){
   uint8_t config = readSingleRegister(DEVICE_CONFIG); //grab current device configuration 
-  return bitRead(config, 7); //return 7th bit from config register
+  return static_cast<Ambient_Resolution>(bitRead(config, 7)); //return 7th bit from config register
 }
 
 bool MCP9600::setThermocoupleResolution(Thermocouple_Resolution res){
@@ -125,7 +159,7 @@ Thermocouple_Resolution MCP9600::getThermocoupleResolution(){
   bool lowResolutionBit = bitRead(config, 5);
   bitWrite(res, 1, highResolutionBit); //set 1st bit of the enum to the 6th bit of the config register
   bitWrite(res, 0, lowResolutionBit); //set 0th bit of the enum to the 5th bit of the config register
-  return res;
+  return static_cast<Thermocouple_Resolution>(res);
 }
 
 uint8_t MCP9600::setThermocoupleType(Thermocouple_Type type){
@@ -142,7 +176,7 @@ uint8_t MCP9600::setThermocoupleType(Thermocouple_Type type){
 
 Thermocouple_Type MCP9600::getThermocoupleType(){
   uint8_t config = readSingleRegister(THERMO_SENSOR_CONFIG);
-  return (config >> 4); //clear the non-thermocouple-type bits in the config registe
+  return static_cast<Thermocouple_Type>(config >> 4); //clear the non-thermocouple-type bits in the config registe
 }
 
 uint8_t MCP9600::setFilterCoefficient(uint8_t coefficient){
@@ -475,6 +509,9 @@ bool MCP9600::isTempGreaterThanLimit(uint8_t number){
 /*------------------------- Internal I2C Abstraction ---------------- */
 
 uint8_t MCP9600::readSingleRegister(MCP9600_Register reg){
+  //Attempt to read the register until we exit with no error code
+  //This attempts to fix the bug where clock stretching sometimes failes, as
+  //described in the MCP9600 eratta
   for(uint8_t attempts; attempts <= retryAttempts; attempts++){
     _i2cPort->beginTransmission(DEV_ADDR);
     _i2cPort->write(reg);
@@ -487,6 +524,9 @@ uint8_t MCP9600::readSingleRegister(MCP9600_Register reg){
 }
 
 uint16_t MCP9600::readDoubleRegister(MCP9600_Register reg){
+  //Attempt to read the register until we exit with no error code
+  //This attempts to fix the bug where clock stretching sometimes failes, as
+  //described in the MCP9600 eratta
   for(byte attempts; attempts <= retryAttempts; attempts++){
     _i2cPort->beginTransmission(DEV_ADDR);
     _i2cPort->write(reg);

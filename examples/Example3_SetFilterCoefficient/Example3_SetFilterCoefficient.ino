@@ -11,6 +11,13 @@
   where 0 disables the filter, 1 corresponds to minimum filtering, and 7 enables maximum filtering. The "strength"
   of the filter just refers to how long it takes for the filter to respond to a step function input. 
 
+  Quick Note! For some reason the getFilterCoefficient() function is a little wierd about returning the proper
+  data. This is a known issue and while we've done our best to fix it, every once in a while it might return a 0,
+  or the wrong value entirely. We think this is an issue with the MCP9600, and there's not much we can do about it.
+  If you'd like to learn more or contact us, check out this issue on GitHub!
+
+  https://github.com/sparkfun/SparkFun_MCP9600_Arduino_Library/issues/1
+
   Hardware Connections:
   Attach the Qwiic Shield to your Arduino/Photon/ESP32 or other
   Plug the sensor onto the shield
@@ -66,15 +73,15 @@ void setup(){
 }
 
 void loop(){ //print the thermocouple, ambient and delta temperatures every 200ms
-    Serial.print("Thermocouple: ");
-    Serial.print(tempSensor.thermocoupleTemp());
-    Serial.print(" °C   Ambient: ");
-    Serial.print(tempSensor.ambientTemp());
-    Serial.print(" °C   Temperature Delta: ");
-    Serial.print(tempSensor.tempDelta());
-    Serial.print(" °C");
-    Serial.print("   Current coefficient: ");
-    Serial.print(tempSensor.getFilterCoefficient(), BIN);
-    Serial.println();
-    delay(200);
+    if(tempSensor.available()){
+        Serial.print("Thermocouple: ");
+        Serial.print(tempSensor.getThermocoupleTemp());
+        Serial.print(" °C   Ambient: ");
+        Serial.print(tempSensor.getAmbientTemp());
+        Serial.print(" °C   Temperature Delta: ");
+        Serial.print(tempSensor.getTempDelta());
+        Serial.print(" °C");
+        Serial.println();
+        delay(200);        
+    }
 }

@@ -30,7 +30,7 @@ Distributed as-is; no warranty is given.
 #define retryAttempts 3 //how many times to attempt to read a register from the thermocouple before giving up
 
 // register pointers for various device functions
-enum MCP9600_Register {
+enum MCP9600_Register: uint8_t {
   HOT_JUNC_TEMP = 0x00,
   DELTA_JUNC_TEMP = 0x01,
   COLD_JUNC_TEMP = 0x02,
@@ -53,7 +53,7 @@ enum MCP9600_Register {
   DEVICE_ID = 0x20,
 };
 
-enum Thermocouple_Type {
+enum Thermocouple_Type: uint8_t {
   TYPE_K = 0b000,
   TYPE_J = 0b001,
   TYPE_T = 0b010,
@@ -64,19 +64,19 @@ enum Thermocouple_Type {
   TYPE_R = 0b111,
 };
 
-enum Ambient_Resolution {
-  RES_ZERO_POINT_0625 = 0b0,
-  RES_ZERO_POINT_25 = 0b1,
+enum Ambient_Resolution: bool {
+  RES_ZERO_POINT_0625 = 0,
+  RES_ZERO_POINT_25 = 1,
 };
 
-enum Thermocouple_Resolution {
+enum Thermocouple_Resolution: uint8_t {
   RES_18_BIT = 0b00,
   RES_16_BIT = 0b01,
   RES_14_BIT = 0b10,
   RES_12_BIT = 0b11,
 };
 
-enum Burst_Sample {
+enum Burst_Sample: uint8_t {
   SAMPLES_1 = 0b000,
   SAMPLES_2 = 0b001,
   SAMPLES_4 = 0b010,
@@ -87,7 +87,7 @@ enum Burst_Sample {
   SAMPLES_128 = 0b111,
 };
 
-enum Shutdown_Mode {
+enum Shutdown_Mode: uint8_t {
   NORMAL = 0x00,
   SHUTDOWN = 0x01,
   BURST = 0x02,
@@ -96,21 +96,20 @@ enum Shutdown_Mode {
 class MCP9600{
   public:
 
-  //Class constructor
-  MCP9600(uint8_t address = DEV_ADDR, TwoWire &wirePort = Wire);
-
   //Device status
+  bool begin(uint8_t address = DEV_ADDR, TwoWire &wirePort = Wire); //Sets device I2C address to a user-specified address, over whatever port the user specifies. 
+  bool available();                                                 //Returns true if the thermocouple (hot) junction temperature has been updated since we last checked. Also referred to as the data ready bit.
   bool isConnected();                                               //Returns true if the thermocouple will acknowledge over I2C, and false otherwise
   uint16_t deviceID();                                              //Returns the contents of the device ID register. The upper 8 bits are constant, but the lower contain revision data.
   bool checkDeviceID();                                             //Returns true if the constant upper 8 bits in the device ID register are what they should be according to the datasheet.
   bool resetToDefaults();                                           //Resets all device parameters to their default values. Returns 1 if there was an error, zero otherwise.
 
   //Sensor measurements
-  float getThermocoupleTemp(bool units = true);                     //Returns the thermocouple temperature. Set units to true for Celcius, or false for freedom units (Fahrenheit)
+  float getThermocoupleTemp(bool units = true);                     //Returns the thermocouple temperature, and clears the data ready bit. Set units to true for Celcius, or false for freedom units (Fahrenheit)
   float getAmbientTemp(bool units = true);                          //Returns the ambient (IC die) temperature. Set units to true for Celcius, or false for freedom units (Fahrenheit)
   float getTempDelta(bool units = true);                            //Returns the difference in temperature between the thermocouple and ambient junctions. Set units to true for Celcius, or false for freedom units (Fahrenheit)
-  signed long getRawADC();                                             //Returns the raw contents of the raw ADC register
-  bool isInputRangeExceeded();                                        //Returns true if the MCP9600's EMF range has been exceeded, and false otherwise.
+  signed long getRawADC();                                          //Returns the raw contents of the raw ADC register
+  bool isInputRangeExceeded();                                      //Returns true if the MCP9600's EMF range has been exceeded, and false otherwise.
 
   //Measurement configuration
   bool setAmbientResolution(Ambient_Resolution res);                //Changes the resolution on the cold (ambient) junction, for either 0.0625 or 0.25 degree C resolution. Lower resolution reduces conversion time.

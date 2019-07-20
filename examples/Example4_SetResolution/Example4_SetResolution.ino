@@ -74,13 +74,15 @@ void setup(){
 }
 
 void loop(){ //print the thermocouple, ambient and delta temperatures every 200ms
-  Serial.print("Thermocouple: ");
-  Serial.print(tempSensor.thermocoupleTemp());
-  Serial.print(" °C   Ambient: ");
-  Serial.print(tempSensor.ambientTemp());
-  Serial.print(" °C   Temperature Delta: ");
-  Serial.print(tempSensor.tempDelta());
-  Serial.print(" °C");
-  Serial.println();
-  delay(200);
+    if(tempSensor.available()){
+        Serial.print("Thermocouple: ");
+        Serial.print(tempSensor.getThermocoupleTemp());
+        Serial.print(" °C   Ambient: ");
+        Serial.print(tempSensor.getAmbientTemp());
+        Serial.print(" °C   Temperature Delta: ");
+        Serial.print(tempSensor.getTempDelta());
+        Serial.print(" °C");
+        Serial.println();
+        delay(200);        
+    }
 }
