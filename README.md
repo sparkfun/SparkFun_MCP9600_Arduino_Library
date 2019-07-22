@@ -1,7 +1,7 @@
 SparkFun MCP9600 Arduino Library [![Build Status](https://travis-ci.com/sparkfun/SparkFun_MCP9600_Arduino_Library.svg?token=3wUDYUD5kXLUXs2Cb6te&branch=master)](https://travis-ci.com/sparkfun/SparkFun_MCP9600_Arduino_Library)
 ========================================
 
-![SparkFun MCP9600 Breakout](https://media.tenor.com/images/47b81948be5023555549c01d88ae3289/tenor.gif)
+![SparkFun MCP9600 Breakout](https://cdn.sparkfun.com//assets/parts/1/4/1/0/0/15508-Qwiic_Thermocouple_Amplifier_-_MCP9600-01.jpg)
 
 This library allows the user to:
 
