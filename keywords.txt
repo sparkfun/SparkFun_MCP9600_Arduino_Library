@@ -1,31 +1,51 @@
 ######################################################################
-# Syntax Coloring Map for SparkFun TMP117 Temperature Sensor Library #
+# Syntax Coloring Map for SparkFun MCP9600 Arduino Library           #
 ######################################################################
 # Class
 ######################################################################
 
-TMP117	KEYWORD1
+MCP9600	KEYWORD1
+Thermocouple_Type   KEYWORD1
+Ambient_Resolution  KEYWORD1
+Thermocouple_Resolution KEYWORD1
+Burst_Sample    KEYWORD1
+Shutdown_Mode   KEYWORD1
 
 ######################################################################
 # Methods and Functions
 ######################################################################
 
 begin	KEYWORD2
-getAddress	KEYWORD2
-setAddress      KEYWORD2
-readTempC	KEYWORD2
-readTempF	KEYWORD2
-getTemperatureOffset	KEYWORD2
-setTemperatureOffset	KEYWORD2
-getLowLimit	KEYWORD2
-setLowLimit	KEYWORD2
-getHighLimit	KEYWORD2
-setHighLimit	KEYWORD2
-getConversionCycleTime	KEYWORD2
-setConversionCycleTime	KEYWORD2
-getConversionMode	KEYWORD2
-setConversionMode	KEYWORD2
-dataReady KEYWORD2
-softReset	KEYWORD2
-readRegister	KEYWORD2
-writeRegister	KEYWORD2
+available	KEYWORD2
+isConnected	KEYWORD2
+deviceID	KEYWORD2
+checkDeviceID	KEYWORD2
+resetToDefaults	KEYWORD2
+getThermocoupleTemp	KEYWORD2
+getAmbientTemp	KEYWORD2
+getTempDelta	KEYWORD2
+getRawADC	KEYWORD2
+isInputRangeExceeded	KEYWORD2
+setAmbientResolution 	KEYWORD2
+getAmbientResolution	KEYWORD2
+setThermocoupleResolution	KEYWORD2
+getThermocoupleResolution	KEYWORD2
+setThermocoupleType	KEYWORD2
+getThermocoupleType	KEYWORD2
+setFilterCoefficient	KEYWORD2
+getFilterCoefficient	KEYWORD2
+setBurstSamples	KEYWORD2
+getBurstSamples	KEYWORD2
+burstAvailable	KEYWORD2
+startBurst	KEYWORD2
+setShutdownMode	KEYWORD2
+getShutdownMode	KEYWORD2
+configAlertTemp	KEYWORD2
+configAlertJunction	KEYWORD2
+configAlertHysteresis	KEYWORD2
+configAlertEdge	KEYWORD2
+configAlertLogicLevel	KEYWORD2
+configAlertMode	KEYWORD2
+configAlertEnable	KEYWORD2
+clearAlertPin	KEYWORD2
+isTempGreaterThanLimit	KEYWORD2
