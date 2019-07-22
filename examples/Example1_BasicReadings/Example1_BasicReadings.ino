@@ -51,6 +51,6 @@ void loop(){ //print the thermocouple, ambient and delta temperatures every 200m
         Serial.print(tempSensor.getTempDelta());
         Serial.print(" °C");
         Serial.println();
-        //delay(200);
+        delay(20); //don't hammer too hard on the I2C bus
     }
 }

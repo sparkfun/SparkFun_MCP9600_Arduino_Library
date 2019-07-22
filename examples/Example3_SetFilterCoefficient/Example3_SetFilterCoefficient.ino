@@ -32,6 +32,7 @@ void setup(){
     Serial.begin(115200);
     Wire.begin();
     Wire.setClock(100000);
+    tempSensor.begin();
 
     //check if the sensor is connected
     if(tempSensor.isConnected()){
@@ -45,8 +46,6 @@ void setup(){
     //check if the Device ID is correct
     if(tempSensor.checkDeviceID()){
         Serial.println("Device ID is correct!");
-        Serial.print("Device ID reported as: 0x");
-        Serial.println(tempSensor.readDoubleRegister(DEVICE_ID), HEX);
     }
     else {
         Serial.println("Device ID is not correct! Freezing.");
@@ -80,8 +79,9 @@ void loop(){ //print the thermocouple, ambient and delta temperatures every 200m
         Serial.print(tempSensor.getAmbientTemp());
         Serial.print(" °C   Temperature Delta: ");
         Serial.print(tempSensor.getTempDelta());
-        Serial.print(" °C");
+        Serial.print(" °C   Filter Coefficient: ");
+        Serial.print(tempSensor.getFilterCoefficient(), DEC);
         Serial.println();
-        delay(200);        
+        delay(20); //don't pound on the I2C bus too hard     
     }
 }

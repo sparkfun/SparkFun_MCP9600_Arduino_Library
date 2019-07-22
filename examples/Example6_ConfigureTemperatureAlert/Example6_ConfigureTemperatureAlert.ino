@@ -35,6 +35,7 @@ void setup(){
     Serial.begin(115200);
     Wire.begin();
     Wire.setClock(100000);
+    tempSensor.begin();
 
   //check if the sensor is connected
   if(tempSensor.isConnected()){
@@ -86,9 +87,9 @@ void setup(){
 }
 
 unsigned long clock = millis();
-uint16_t updateTime = 200;
+uint16_t updateTime = 20;
 void loop(){
-  if((clock + updateTime) < millis()){
+  if((clock + updateTime) < millis()){ //update every 20ms without blocking!
     Serial.print("Thermocouple: ");
     Serial.print(tempSensor.getThermocoupleTemp());
     Serial.print(" °C   Ambient: ");

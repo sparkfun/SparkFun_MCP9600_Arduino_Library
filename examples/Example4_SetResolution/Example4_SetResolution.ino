@@ -50,6 +50,8 @@ void setup(){
   Serial.begin(115200);
   Wire.begin();
   Wire.setClock(100000);
+  tempSensor.begin();
+  
   //check if the sensor is connected
   if(tempSensor.isConnected()){
       Serial.println("Device will acknowledge!");
@@ -83,6 +85,6 @@ void loop(){ //print the thermocouple, ambient and delta temperatures every 200m
         Serial.print(tempSensor.getTempDelta());
         Serial.print(" °C");
         Serial.println();
-        delay(200);        
+        delay(20); //don't pound on the I2C bus too hard
     }
 }

@@ -26,6 +26,7 @@ void setup(){
   Serial.begin(115200);
   Wire.begin();
   Wire.setClock(100000);
+  tempSensor.begin();
   
   //check if the sensor is connected
   if(tempSensor.isConnected()){
