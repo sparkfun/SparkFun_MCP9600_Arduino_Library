@@ -53,6 +53,7 @@ uint16_t MCP9600::deviceID(){
 }
 
 bool MCP9600::checkDeviceID(){
+  deviceID(); //this is here because the first read doesn't seem to work, but the second does. No idea why :/
   return (highByte(deviceID()) == DEV_ID_UPPER);
 }
 
