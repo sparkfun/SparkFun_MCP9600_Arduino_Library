@@ -24,8 +24,7 @@ Documentation
 --------------
 
 * **[Installing an Arduino Library Guide](https://learn.sparkfun.com/tutorials/installing-an-arduino-library)** - Basic information on how to install an Arduino library.
-* **[Product Repository](https://github.com/sparkfun/BME280-Breakout-Board)** - Main repository (including hardware files) for the SparkFun BME280 Breakout.
-* **[Hookup Guide](https://learn.sparkfun.com/tutorials/sparkfun-bme280-breakout-hookup-guide)** - Basic hookup guide for the SparkFun BME280 Breakout.
+* **[Product Repository](https://github.com/sparkfunX/Qwiic_MCP9600_Thermocouple)** - Main repository (including hardware files) for the SparkFun MCP9600 Breakout.
 
 Products that use this Library 
 ---------------------------------
@@ -35,7 +34,8 @@ Products that use this Library
 Version History
 ---------------
 
-* [V_1.0.0](https://github.com/sparkfun/SparkFun_MCP9600_Arduino_Library/tree/V_1.0.0) - Public release.
+* [v1.0.0](https://github.com/sparkfun/SparkFun_MCP9600_Arduino_Library/releases/tag/1.0.0) - Initial Public release.
+* [v1.0.1](https://github.com/sparkfun/SparkFun_MCP9600_Arduino_Library/releases/tag/v1.0.1) - More architecture support.
 
 License Information
 -------------------
