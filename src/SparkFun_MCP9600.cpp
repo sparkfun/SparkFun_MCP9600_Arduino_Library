@@ -154,7 +154,7 @@ bool MCP9600::setThermocoupleResolution(Thermocouple_Resolution res){
 
 Thermocouple_Resolution MCP9600::getThermocoupleResolution(){
   uint8_t config = readSingleRegister(DEVICE_CONFIG); //grab current device configuration 
-  Thermocouple_Resolution res; //define new thermocoupleResolution enum to return
+  uint8_t res; //define new thermocoupleResolution enum to return
   bool highResolutionBit = bitRead(config, 6);
   bool lowResolutionBit = bitRead(config, 5);
   bitWrite(res, 1, highResolutionBit); //set 1st bit of the enum to the 6th bit of the config register
@@ -225,11 +225,11 @@ Burst_Sample MCP9600::getBurstSamples(){
   bool highResolutionBit = bitRead(config, 4);
   bool midResolutionBit = bitRead(config, 3);
   bool lowResolutionBit = bitRead(config, 2);
-  Burst_Sample samples;
+  uint8_t samples;
   bitWrite(samples, 2, highResolutionBit); //write 4th bit of config to 2nd bit of samples
   bitWrite(samples, 1, midResolutionBit); //write 3rd bit of config to 1st bit of samples
   bitWrite(samples, 0, lowResolutionBit); //write 2nd bit of config to 0th bit of samples
-  return samples;
+  return static_cast<Burst_Sample>(samples);
 }
 
 bool MCP9600::burstAvailable(){
@@ -262,7 +262,7 @@ Shutdown_Mode MCP9600::getShutdownMode(){
   uint8_t mode = 0;
   bitWrite(mode, 0, bitRead(config, 0));
   bitWrite(mode, 1, bitRead(config, 1));
-  return mode; //clear all bits except the last two and return
+  return static_cast <Shutdown_Mode>(mode); //clear all bits except the last two and return
 }
 
 
@@ -284,7 +284,7 @@ bool MCP9600::configAlertTemp(uint8_t number, float temp){
     tempLimitRegister = ALERT4_LIMIT;
     break;
   default:
-    return;
+    return 1;
     break;
   }
 
@@ -314,7 +314,7 @@ bool MCP9600::configAlertJunction(uint8_t number, bool junction){
     alertConfigRegister = ALERT4_CONFIG;
     break;  
   default:
-    return;
+    return 1;
     break;
   }
 
@@ -340,7 +340,7 @@ bool MCP9600::configAlertHysteresis(uint8_t number, uint8_t hysteresis){
     alertHysteresisRegister = ALERT4_HYSTERESIS;
     break;
   default:
-    return;
+    return 1;
     break;
   }
 
@@ -364,7 +364,7 @@ bool MCP9600::configAlertEdge(uint8_t number, bool edge){
     alertConfigRegister = ALERT4_CONFIG;
     break;  
   default:
-    return;
+    return 1;
     break;
   }
 
@@ -390,7 +390,7 @@ bool MCP9600::configAlertLogicLevel(uint8_t number, bool level){
     alertConfigRegister = ALERT4_CONFIG;
     break;  
   default:
-    return;
+    return 1;
     break;
   }
 
@@ -416,7 +416,7 @@ bool MCP9600::configAlertMode(uint8_t number, bool mode){
     alertConfigRegister = ALERT4_CONFIG;
     break;  
   default:
-    return;
+    return 1;
     break;
   }
 
@@ -442,7 +442,7 @@ bool MCP9600::configAlertEnable(uint8_t number, bool enable){
     alertConfigRegister = ALERT4_CONFIG;
     break;  
   default:
-    return;
+    return 1;
     break;
   }
 
@@ -472,7 +472,7 @@ bool MCP9600::clearAlertPin(uint8_t number){
     break;
 
   default:
-    return;
+    return 1;
     break;
   }
   //grab the data already in the register so we don't override any other settings!
@@ -484,7 +484,7 @@ bool MCP9600::clearAlertPin(uint8_t number){
 }
 
 bool MCP9600::isTempGreaterThanLimit(uint8_t number){
-  if(number > 4) return; //if a nonexistent alert number is given, return with nothing
+  if(number > 4) return 0; //if a nonexistent alert number is given, return with nothing
   uint8_t status = readSingleRegister(SENSOR_STATUS);
   switch (number){
   case 1:
@@ -500,7 +500,7 @@ bool MCP9600::isTempGreaterThanLimit(uint8_t number){
     return bitRead(status, 3);
     break;
   default:
-    return;
+    return 1;
     break;
   }
 }
@@ -520,7 +520,6 @@ uint8_t MCP9600::readSingleRegister(MCP9600_Register reg){
       return _i2cPort->read();     
     }
   }
-  return;
 }
 
 uint16_t MCP9600::readDoubleRegister(MCP9600_Register reg){
@@ -538,7 +537,6 @@ uint16_t MCP9600::readDoubleRegister(MCP9600_Register reg){
       return data;
     }
   }
-  return;
 }
 
 bool MCP9600::writeSingleRegister(MCP9600_Register reg, uint8_t data){
