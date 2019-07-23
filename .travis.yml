@@ -8,10 +8,10 @@ before_install:
   - sudo mv arduino-1.8.9 /usr/local/share/arduino
   - sudo ln -s /usr/local/share/arduino/arduino /usr/local/bin/arduino
 install:
+  - arduino-cli core install arduino:samd
   - ln -s $PWD /usr/local/share/arduino/libraries/SparkFun_MCP9600_Arduino_Library
   - pwd
   - ls -lai
-  - arduino --install-library "SparkFun MCP9600 Thermocouple Library"
 script:
   - arduino --verify --board arduino:avr:uno $PWD/examples/Example1_BasicReadings/Example1_BasicReadings.ino
   - arduino --verify --board arduino:avr:uno $PWD/examples/Example2_SetThermocoupleType/Example2_SetThermocoupleType.ino
