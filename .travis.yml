@@ -27,6 +27,7 @@ install:
 
 script:
   #compile for arduino AVR
+  - echo Compiling for Arduino AVR...
   - arduino --verify --board arduino:avr:uno $PWD/examples/Example1_BasicReadings/Example1_BasicReadings.ino
   - arduino --verify --board arduino:avr:uno $PWD/examples/Example2_SetThermocoupleType/Example2_SetThermocoupleType.ino
   - arduino --verify --board arduino:avr:uno $PWD/examples/Example3_SetFilterCoefficient/Example3_SetFilterCoefficient.ino
@@ -35,6 +36,7 @@ script:
   - arduino --verify --board arduino:avr:uno $PWD/examples/Example6_ConfigureTemperatureAlert/Example6_ConfigureTemperatureAlert.ino 
 
   #compile for arduino SAMD
+  - echo Compiling for Arduino SAMD...
   - arduino --verify --board arduino:samd:arduino_zero_edbg $PWD/examples/Example1_BasicReadings/Example1_BasicReadings.ino
   - arduino --verify --board arduino:samd:arduino_zero_edbg $PWD/examples/Example2_SetThermocoupleType/Example2_SetThermocoupleType.ino
   - arduino --verify --board arduino:samd:arduino_zero_edbg $PWD/examples/Example3_SetFilterCoefficient/Example3_SetFilterCoefficient.ino
@@ -43,6 +45,7 @@ script:
   - arduino --verify --board arduino:samd:arduino_zero_edbg $PWD/examples/Example6_ConfigureTemperatureAlert/Example6_ConfigureTemperatureAlert.ino 
 
   #compile for SparkFun AVR
+  - echo Compiling for SparkFun AVR...
   - arduino --verify --board SparkFun:avr:RedBoard $PWD/examples/Example1_BasicReadings/Example1_BasicReadings.ino
   - arduino --verify --board SparkFun:avr:RedBoard $PWD/examples/Example2_SetThermocoupleType/Example2_SetThermocoupleType.ino
   - arduino --verify --board SparkFun:avr:RedBoard $PWD/examples/Example3_SetFilterCoefficient/Example3_SetFilterCoefficient.ino
@@ -51,13 +54,22 @@ script:
   - arduino --verify --board SparkFun:avr:RedBoard $PWD/examples/Example6_ConfigureTemperatureAlert/Example6_ConfigureTemperatureAlert.ino 
 
   #compile for SparkFun SAMD
+  - echo Compiling for SparkFun SAMD...
   - arduino --verify --board SparkFun:samd:samd51_thing_plus $PWD/examples/Example1_BasicReadings/Example1_BasicReadings.ino
   - arduino --verify --board SparkFun:samd:samd51_thing_plus $PWD/examples/Example2_SetThermocoupleType/Example2_SetThermocoupleType.ino
   - arduino --verify --board SparkFun:samd:samd51_thing_plus $PWD/examples/Example3_SetFilterCoefficient/Example3_SetFilterCoefficient.ino
   - arduino --verify --board SparkFun:samd:samd51_thing_plus $PWD/examples/Example4_SetResolution/Example4_SetResolution.ino
   - arduino --verify --board SparkFun:samd:samd51_thing_plus $PWD/examples/Example5_BurstMode/Example5_BurstMode.ino
   - arduino --verify --board SparkFun:samd:samd51_thing_plus $PWD/examples/Example6_ConfigureTemperatureAlert/Example6_ConfigureTemperatureAlert.ino 
-  
+
+  #compile for SparkFun Artemis
+  - echo Compiling for SparkFun Artemis...
+  - arduino --verify --board SparkFun:apollo3:amap3blackboard $PWD/examples/Example1_BasicReadings/Example1_BasicReadings.ino
+  - arduino --verify --board SparkFun:apollo3:amap3blackboard $PWD/examples/Example2_SetThermocoupleType/Example2_SetThermocoupleType.ino
+  - arduino --verify --board SparkFun:apollo3:amap3blackboard $PWD/examples/Example3_SetFilterCoefficient/Example3_SetFilterCoefficient.ino
+  - arduino --verify --board SparkFun:apollo3:amap3blackboard $PWD/examples/Example4_SetResolution/Example4_SetResolution.ino
+  - arduino --verify --board SparkFun:apollo3:amap3blackboard $PWD/examples/Example5_BurstMode/Example5_BurstMode.ino
+  - arduino --verify --board SparkFun:apollo3:amap3blackboard $PWD/examples/Example6_ConfigureTemperatureAlert/Example6_ConfigureTemperatureAlert.ino 
 
 notifications:
   email:
