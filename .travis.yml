@@ -9,13 +9,13 @@ before_install:
   - sudo ln -s /usr/local/share/arduino/arduino /usr/local/bin/arduino
 install:
   - ln -s $PWD /usr/local/share/arduino/libraries/SparkFun_MCP9600_Arduino_Library
+  - arduino --install-boards arduino:samd
   - arduino --pref "boardsmanager.additional.urls=https://raw.githubusercontent.com/sparkfun/Arduino_Boards/master/IDE_Board_Manager/package_sparkfun_index.json" --save-prefs
   - arduino --install-boards SparkFun:samd
   - arduino --install-boards SparkFun:apollo3
   - arduino --install-boards SparkFun:avr
   - arduino --pref "boardsmanager.additional.urls=https://adafruit.github.io/arduino-board-index/package_adafruit_index.json" --save-prefs
   - arduino --pref "boardsmanager.additional.urls=http://arduino.esp8266.com/stable/package_esp8266com_index.json" --save-prefs
-  - arduino --install-boards esp266:esp8266
 
 script:
   #compile for arduino AVR
@@ -41,7 +41,7 @@ script:
   - arduino --verify --board arduino:avr:RedBoard $PWD/examples/Example4_SetResolution/Example4_SetResolution.ino
   - arduino --verify --board arduino:avr:RedBoard $PWD/examples/Example5_BurstMode/Example5_BurstMode.ino
   - arduino --verify --board arduino:avr:RedBoard $PWD/examples/Example6_ConfigureTemperatureAlert/Example6_ConfigureTemperatureAlert.ino 
-  
+
   #compile for SparkFun SAMD
   - arduino --verify --board arduino:samd:samd51_thing_plus $PWD/examples/Example1_BasicReadings/Example1_BasicReadings.ino
   - arduino --verify --board arduino:samd:samd51_thing_plus $PWD/examples/Example2_SetThermocoupleType/Example2_SetThermocoupleType.ino
