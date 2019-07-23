@@ -7,6 +7,14 @@ before_install:
   - tar xf arduino-1.8.9-linux64.tar.xz
   - sudo mv arduino-1.8.9 /usr/local/share/arduino
   - sudo ln -s /usr/local/share/arduino/arduino /usr/local/bin/arduino
+
+    # Arduino IDE adds a lot of noise caused by network traffic, trying to firewall it off
+  - sudo iptables -P INPUT DROP
+  - sudo iptables -P FORWARD DROP
+  - sudo iptables -P OUTPUT ACCEPT
+  - sudo iptables -A INPUT -i lo -j ACCEPT
+  - sudo iptables -A OUTPUT -o lo -j ACCEPT
+  - sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 install:
   - ln -s $PWD /usr/local/share/arduino/libraries/SparkFun_MCP9600_Arduino_Library
   - arduino --install-boards arduino:samd
@@ -35,20 +43,20 @@ script:
   - arduino --verify --board arduino:samd:arduino_zero_edbg $PWD/examples/Example6_ConfigureTemperatureAlert/Example6_ConfigureTemperatureAlert.ino 
 
   #compile for SparkFun AVR
-  - arduino --verify --board arduino:avr:RedBoard $PWD/examples/Example1_BasicReadings/Example1_BasicReadings.ino
-  - arduino --verify --board arduino:avr:RedBoard $PWD/examples/Example2_SetThermocoupleType/Example2_SetThermocoupleType.ino
-  - arduino --verify --board arduino:avr:RedBoard $PWD/examples/Example3_SetFilterCoefficient/Example3_SetFilterCoefficient.ino
-  - arduino --verify --board arduino:avr:RedBoard $PWD/examples/Example4_SetResolution/Example4_SetResolution.ino
-  - arduino --verify --board arduino:avr:RedBoard $PWD/examples/Example5_BurstMode/Example5_BurstMode.ino
-  - arduino --verify --board arduino:avr:RedBoard $PWD/examples/Example6_ConfigureTemperatureAlert/Example6_ConfigureTemperatureAlert.ino 
+  - arduino --verify --board SparkFun:avr:RedBoard $PWD/examples/Example1_BasicReadings/Example1_BasicReadings.ino
+  - arduino --verify --board SparkFun:avr:RedBoard $PWD/examples/Example2_SetThermocoupleType/Example2_SetThermocoupleType.ino
+  - arduino --verify --board SparkFun:avr:RedBoard $PWD/examples/Example3_SetFilterCoefficient/Example3_SetFilterCoefficient.ino
+  - arduino --verify --board SparkFun:avr:RedBoard $PWD/examples/Example4_SetResolution/Example4_SetResolution.ino
+  - arduino --verify --board SparkFun:avr:RedBoard $PWD/examples/Example5_BurstMode/Example5_BurstMode.ino
+  - arduino --verify --board SparkFun:avr:RedBoard $PWD/examples/Example6_ConfigureTemperatureAlert/Example6_ConfigureTemperatureAlert.ino 
 
   #compile for SparkFun SAMD
-  - arduino --verify --board arduino:samd:samd51_thing_plus $PWD/examples/Example1_BasicReadings/Example1_BasicReadings.ino
-  - arduino --verify --board arduino:samd:samd51_thing_plus $PWD/examples/Example2_SetThermocoupleType/Example2_SetThermocoupleType.ino
-  - arduino --verify --board arduino:samd:samd51_thing_plus $PWD/examples/Example3_SetFilterCoefficient/Example3_SetFilterCoefficient.ino
-  - arduino --verify --board arduino:samd:samd51_thing_plus $PWD/examples/Example4_SetResolution/Example4_SetResolution.ino
-  - arduino --verify --board arduino:samd:samd51_thing_plus $PWD/examples/Example5_BurstMode/Example5_BurstMode.ino
-  - arduino --verify --board arduino:samd:samd51_thing_plus $PWD/examples/Example6_ConfigureTemperatureAlert/Example6_ConfigureTemperatureAlert.ino 
+  - arduino --verify --board SparkFun:samd:samd51_thing_plus $PWD/examples/Example1_BasicReadings/Example1_BasicReadings.ino
+  - arduino --verify --board SparkFun:samd:samd51_thing_plus $PWD/examples/Example2_SetThermocoupleType/Example2_SetThermocoupleType.ino
+  - arduino --verify --board SparkFun:samd:samd51_thing_plus $PWD/examples/Example3_SetFilterCoefficient/Example3_SetFilterCoefficient.ino
+  - arduino --verify --board SparkFun:samd:samd51_thing_plus $PWD/examples/Example4_SetResolution/Example4_SetResolution.ino
+  - arduino --verify --board SparkFun:samd:samd51_thing_plus $PWD/examples/Example5_BurstMode/Example5_BurstMode.ino
+  - arduino --verify --board SparkFun:samd:samd51_thing_plus $PWD/examples/Example6_ConfigureTemperatureAlert/Example6_ConfigureTemperatureAlert.ino 
   
 
 notifications:
