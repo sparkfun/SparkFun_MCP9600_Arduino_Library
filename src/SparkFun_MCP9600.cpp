@@ -106,11 +106,11 @@ float MCP9600::getTempDelta(bool units){
 
 signed long MCP9600::getRawADC(){
   for(byte attempts; attempts <= retryAttempts; attempts++){
-    _i2cPort->beginTransmission(DEV_ADDR);
+    _i2cPort->beginTransmission(_deviceAddress);
     _i2cPort->write(RAW_ADC);
     _i2cPort->endTransmission();
 
-    if(_i2cPort->requestFrom(DEV_ADDR, 3) != 0){
+    if(_i2cPort->requestFrom(_deviceAddress, 3) != 0){
       signed long data = _i2cPort->read() << 16;
       data |= _i2cPort->read() << 8;
       data |= _i2cPort->read();
@@ -514,10 +514,10 @@ uint8_t MCP9600::readSingleRegister(MCP9600_Register reg){
   //This attempts to fix the bug where clock stretching sometimes failes, as
   //described in the MCP9600 eratta
   for(uint8_t attempts; attempts <= retryAttempts; attempts++){
-    _i2cPort->beginTransmission(DEV_ADDR);
+    _i2cPort->beginTransmission(_deviceAddress);
     _i2cPort->write(reg);
     _i2cPort->endTransmission();
-    if(_i2cPort->requestFrom(DEV_ADDR, 1) != 0){
+    if(_i2cPort->requestFrom(_deviceAddress, 1) != 0){
       return _i2cPort->read();     
     }
   }
@@ -528,11 +528,11 @@ uint16_t MCP9600::readDoubleRegister(MCP9600_Register reg){
   //This attempts to fix the bug where clock stretching sometimes failes, as
   //described in the MCP9600 eratta
   for(byte attempts; attempts <= retryAttempts; attempts++){
-    _i2cPort->beginTransmission(DEV_ADDR);
+    _i2cPort->beginTransmission(_deviceAddress);
     _i2cPort->write(reg);
     _i2cPort->endTransmission();
 
-    if(_i2cPort->requestFrom(DEV_ADDR, 2) != 0){
+    if(_i2cPort->requestFrom(_deviceAddress, 2) != 0){
       uint16_t data = _i2cPort->read() << 8;
       data |= _i2cPort->read();
       return data;
