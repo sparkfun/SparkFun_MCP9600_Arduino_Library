@@ -1,7 +1,23 @@
 SparkFun MCP9600 Arduino Library [![Build Status](https://travis-ci.org/sparkfun/SparkFun_MCP9600_Arduino_Library.svg?branch=master)](https://travis-ci.org/sparkfun/SparkFun_MCP9600_Arduino_Library)
 ========================================
 
-![SparkFun MCP9600 Breakout](https://cdn.sparkfun.com//assets/parts/1/4/1/0/0/15508-Qwiic_Thermocouple_Amplifier_-_MCP9600-01.jpg)
+<table class="table table-hover table-striped table-bordered">
+    <tr>
+        <th class="text-center"> 
+        </th>
+        <th class="text-center">
+        </th>
+    </tr>
+    <tr align="center">
+        <td><a href="https://www.sparkfun.com/products/16294"><img src="https://cdn.sparkfun.com/assets/parts/1/4/9/8/3/16294-Qwiic_Thermocouple_Amplifier_-_MCP9600_-_PCC_Connector-01.jpg" alt=""></a></td>
+        <td><a href="https://www.sparkfun.com/products/16295"><img src="https://cdn.sparkfun.com/assets/parts/1/4/9/8/5/16295-Qwiic_Thermocouple_Amplifier_-_MCP9600_-_Screw_Terminals-01.jpg" alt=""></a></td>
+    </tr>
+    <tr align="center">
+        <td>SparkFun MCP9600 Thermocouple Amplifier - PCC Connector (SEN-16294)</td>
+        <td>SparkFun MCP9600 Thermocouple Amplifier - Screw Terminals (SEN-16295)</td>
+    </tr>
+</table>
+
 
 This library allows the user to:
 
