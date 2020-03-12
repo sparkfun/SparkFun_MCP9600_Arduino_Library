@@ -38,7 +38,7 @@ Repository Contents
 
 Documentation
 --------------
-* **[Thermocouple Amplifier Hookup Guide](https://learn.sparkfun.com/tutorials/sparkfun-qwiic-thermocoupler-hookup-guide)** - Hookup guide for the SparkFun Thermocouple Amplifiers.
+* **[Thermocouple Amplifier Hookup Guide](https://learn.sparkfun.com/tutorials/sparkfun-qwiic-thermocouple-hookup-guide)** - Hookup guide for the SparkFun Thermocouple Amplifiers.
 * **[Installing an Arduino Library Guide](https://learn.sparkfun.com/tutorials/installing-an-arduino-library)** - Basic information on how to install an Arduino library.
 * **[Product Repository](https://github.com/sparkfun/Qwiic_Thermocouple_Amplifer)** - Main repository (including hardware files) for the SparkFun MCP9600 Breakout.
 
