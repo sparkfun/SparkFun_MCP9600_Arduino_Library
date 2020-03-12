@@ -35,7 +35,8 @@ void setup(){
     Serial.begin(115200);
     Wire.begin();
     Wire.setClock(100000);
-    tempSensor.begin();
+    tempSensor.begin();       // Uses the default address (0x60) for SparkFun Thermocouple Amplifier
+    //tempSensor.begin(0x66); // Default address (0x66) for SparkX Thermocouple Amplifier
 
   //check if the sensor is connected
   if(tempSensor.isConnected()){
@@ -66,7 +67,7 @@ void setup(){
   tempSensor.configAlertHysteresis(fallingAlert, hysteresis);
   tempSensor.configAlertTemp(fallingAlert, alertTemp);
   tempSensor.configAlertJunction(fallingAlert, 0);
-  tempSensor.configAlertEdge(fallingAlert, HIGH);
+  tempSensor.configAlertEdge(fallingAlert, LOW);
   tempSensor.configAlertLogicLevel(fallingAlert, HIGH);
   tempSensor.configAlertMode(fallingAlert, 1);
   tempSensor.configAlertEnable(fallingAlert, true);

@@ -24,7 +24,7 @@ Distributed as-is; no warranty is given.
 #include <Wire.h>
 #include <Arduino.h>
 
-#define DEV_ADDR 0x66 //device address of the MCP9600
+#define DEV_ADDR 0x60 //device address of the MCP9600
 #define DEV_ID_UPPER 0x40 //value of the upper half of the device ID register. lower half is used for device revision
 #define DEV_RESOLUTION 0.0625 //device resolution (temperature in C that the LSB represents)
 #define retryAttempts 3 //how many times to attempt to read a register from the thermocouple before giving up
