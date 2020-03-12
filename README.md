@@ -21,7 +21,7 @@ SparkFun MCP9600 Arduino Library [![Build Status](https://travis-ci.org/sparkfun
 
 This library allows the user to:
 
-* Read temperature in Celcius or Fahrenheit
+* Read temperature in Celsius or Fahrenheit
 * Use a variety of thermocouple types
 * Configure the onboard exponential moving average filter
 * Set up continuous and burst conversion modes
