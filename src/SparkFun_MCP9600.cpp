@@ -33,9 +33,27 @@ bool MCP9600::begin(uint8_t address, TwoWire &wirePort)
   _deviceAddress = address; //grab the address that the sensor is on
   _i2cPort = &wirePort;     //grab the port that the user wants to use
 
+  // This is the old .begin code. See below for the reason we don't use it any more...
+  //
   //return true if the device is connected and the device ID is what we expect
-  bool success = isConnected();
-  success &= checkDeviceID();
+  //bool success = isConnected();
+  //success &= checkDeviceID();
+
+  // The MCP9600 is a fussy device. If we call isConnected twice in succession, the second call fails
+  // as the MCP9600 does not ACK on the second call. Only on the first.
+  //
+  // The OpenLog Artemis routinely uses the same isConnected code twice: once to detect _anything_ that is on the bus;
+  // and then again to detect an MCP9600. The second time fails.
+  //
+  // If there is a device with a lower address on the OLA Qwiic bus, that device responds first and satisfies
+  // isConnected. Then the OLA code uses isConnected again to detect an MCP9600. That call is successful, as this time it is the first call.
+  // However, the OLA then goes on to call this function to begin the sensor. Previously this was failing as isConnected
+  // (12 lines above) was then being called for the second time...
+  //
+  // Long story short, we should not call isConnected here. We should only call checkDeviceID.
+
+  bool success = checkDeviceID();
+
   return success;
 }
 
@@ -115,7 +133,7 @@ float MCP9600::getTempDelta(bool units)
 
 signed long MCP9600::getRawADC()
 {
-  for (byte attempts; attempts <= retryAttempts; attempts++)
+  for (byte attempts = 0; attempts <= retryAttempts; attempts++)
   {
     _i2cPort->beginTransmission(_deviceAddress);
     _i2cPort->write(RAW_ADC);
@@ -562,7 +580,7 @@ uint8_t MCP9600::readSingleRegister(MCP9600_Register reg)
   //Attempt to read the register until we exit with no error code
   //This attempts to fix the bug where clock stretching sometimes failes, as
   //described in the MCP9600 eratta
-  for (uint8_t attempts; attempts <= retryAttempts; attempts++)
+  for (uint8_t attempts = 0; attempts <= retryAttempts; attempts++)
   {
     _i2cPort->beginTransmission(_deviceAddress);
     _i2cPort->write(reg);
@@ -580,7 +598,7 @@ uint16_t MCP9600::readDoubleRegister(MCP9600_Register reg)
   //Attempt to read the register until we exit with no error code
   //This attempts to fix the bug where clock stretching sometimes failes, as
   //described in the MCP9600 eratta
-  for (byte attempts; attempts <= retryAttempts; attempts++)
+  for (byte attempts = 0; attempts <= retryAttempts; attempts++)
   {
     _i2cPort->beginTransmission(_deviceAddress);
     _i2cPort->write(reg);
