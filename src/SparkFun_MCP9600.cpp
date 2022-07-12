@@ -190,7 +190,7 @@ bool MCP9600::setThermocoupleResolution(Thermocouple_Resolution res)
 Thermocouple_Resolution MCP9600::getThermocoupleResolution()
 {
   uint8_t config = readSingleRegister(DEVICE_CONFIG); //grab current device configuration
-  uint8_t res;                                        //define new thermocoupleResolution enum to return
+  uint8_t res = 0;                                    //define new thermocoupleResolution enum to return
   bool highResolutionBit = bitRead(config, 6);
   bool lowResolutionBit = bitRead(config, 5);
   bitWrite(res, 1, highResolutionBit); //set 1st bit of the enum to the 6th bit of the config register
@@ -270,7 +270,7 @@ Burst_Sample MCP9600::getBurstSamples()
   bool highResolutionBit = bitRead(config, 4);
   bool midResolutionBit = bitRead(config, 3);
   bool lowResolutionBit = bitRead(config, 2);
-  uint8_t samples;
+  uint8_t samples = 0;
   bitWrite(samples, 2, highResolutionBit); //write 4th bit of config to 2nd bit of samples
   bitWrite(samples, 1, midResolutionBit);  //write 3rd bit of config to 1st bit of samples
   bitWrite(samples, 0, lowResolutionBit);  //write 2nd bit of config to 0th bit of samples
