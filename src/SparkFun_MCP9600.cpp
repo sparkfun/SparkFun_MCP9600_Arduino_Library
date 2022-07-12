@@ -139,7 +139,7 @@ signed long MCP9600::getRawADC()
     _i2cPort->write(RAW_ADC);
     _i2cPort->endTransmission();
 
-    if (_i2cPort->requestFrom(_deviceAddress, 3) != 0)
+    if (_i2cPort->requestFrom(_deviceAddress, (uint8_t)3) != 0)
     {
       signed long data = _i2cPort->read() << 16;
       data |= _i2cPort->read() << 8;
@@ -585,7 +585,7 @@ uint8_t MCP9600::readSingleRegister(MCP9600_Register reg)
     _i2cPort->beginTransmission(_deviceAddress);
     _i2cPort->write(reg);
     _i2cPort->endTransmission();
-    if (_i2cPort->requestFrom(_deviceAddress, 1) != 0)
+    if (_i2cPort->requestFrom(_deviceAddress, (uint8_t)1) != 0)
     {
       return _i2cPort->read();
     }
@@ -604,7 +604,7 @@ uint16_t MCP9600::readDoubleRegister(MCP9600_Register reg)
     _i2cPort->write(reg);
     _i2cPort->endTransmission();
 
-    if (_i2cPort->requestFrom(_deviceAddress, 2) != 0)
+    if (_i2cPort->requestFrom(_deviceAddress, (uint8_t)2) != 0)
     {
       uint16_t data = _i2cPort->read() << 8;
       data |= _i2cPort->read();
