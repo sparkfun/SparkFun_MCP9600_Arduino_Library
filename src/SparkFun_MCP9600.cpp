@@ -83,8 +83,8 @@ bool MCP9600::checkDeviceID()
 bool MCP9600::resetToDefaults()
 {
   bool success = writeSingleRegister(SENSOR_STATUS, 0x00);
-  success |= writeSingleRegister(THERMO_SENSOR_CONFIG, 0x00);
-  success |= writeSingleRegister(DEVICE_CONFIG, 0x00);
+  success |= writeSingleRegister(THERMO_SENSOR_CONFIG, 0x00); // Type-K, Filter off
+  success |= writeSingleRegister(DEVICE_CONFIG, 0x00); // 0.0625C, 18-bit, 1 sample, normal operation
   success |= writeSingleRegister(ALERT1_CONFIG, 0x00);
   success |= writeSingleRegister(ALERT2_CONFIG, 0x00);
   success |= writeSingleRegister(ALERT3_CONFIG, 0x00);
@@ -216,7 +216,7 @@ uint8_t MCP9600::setThermocoupleType(Thermocouple_Type type)
 Thermocouple_Type MCP9600::getThermocoupleType()
 {
   uint8_t config = readSingleRegister(THERMO_SENSOR_CONFIG);
-  return static_cast<Thermocouple_Type>(config >> 4); //clear the non-thermocouple-type bits in the config registe
+  return static_cast<Thermocouple_Type>((config >> 4) & 0x07); //shift the thermocouple-type bits into the 3 LSB
 }
 
 uint8_t MCP9600::setFilterCoefficient(uint8_t coefficient)
@@ -226,14 +226,10 @@ uint8_t MCP9600::setFilterCoefficient(uint8_t coefficient)
 
   uint8_t config = readSingleRegister(THERMO_SENSOR_CONFIG);
   bitWrite(coefficient, 3, bitRead(config, 3));
-  bitWrite(coefficient, 4, bitRead(config, 3));
-  bitWrite(coefficient, 5, bitRead(config, 3));
-  bitWrite(coefficient, 6, bitRead(config, 3));
-  bitWrite(coefficient, 7, bitRead(config, 3));
-
-  //config = config >> 3;
-  //config = config << 3;
-  //config |= coefficient; //set the necessary bits in the config register
+  bitWrite(coefficient, 4, bitRead(config, 4));
+  bitWrite(coefficient, 5, bitRead(config, 5));
+  bitWrite(coefficient, 6, bitRead(config, 6));
+  bitWrite(coefficient, 7, bitRead(config, 7));
 
   return writeSingleRegister(THERMO_SENSOR_CONFIG, coefficient);
 }
@@ -298,7 +294,7 @@ bool MCP9600::setShutdownMode(Shutdown_Mode mode)
 {
   uint8_t config = readSingleRegister(DEVICE_CONFIG);
   config = (config >> 2) << 2; //clear last two bits of the device config register
-  config |= mode;
+  config |= mode & 0x03;
 
   bool failed = writeSingleRegister(DEVICE_CONFIG, config); //write new config register to MCP9600
   failed |= (readSingleRegister(DEVICE_CONFIG) != config);  //double check that it was written properly

@@ -1,4 +1,4 @@
-SparkFun MCP9600 Arduino Library [![Build Status](https://travis-ci.org/sparkfun/SparkFun_MCP9600_Arduino_Library.svg?branch=master)](https://travis-ci.org/sparkfun/SparkFun_MCP9600_Arduino_Library)
+SparkFun MCP9600 Arduino Library
 ========================================
 
 <table class="table table-hover table-striped table-bordered">
